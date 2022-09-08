@@ -172,10 +172,11 @@ class Ble(val context: Context) {
                 service.characteristics.forEach{ characteristic ->
                     curDev?.let{ it.characteristics.add(characteristic) }
 
-                    if (characteristic.uuid.toString() == BlueChemiParameters.CHAR_NOTI){
+                    if (characteristic.properties and BluetoothGattCharacteristic.PROPERTY_NOTIFY > 0 ||
+                        characteristic.properties and BluetoothGattCharacteristic.PROPERTY_INDICATE > 0){
+
                         gatt?.setCharacteristicNotification(characteristic, true)
                     }
-
                 }
             }
         }
