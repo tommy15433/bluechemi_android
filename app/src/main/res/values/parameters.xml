@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- weather api called every 3 hours-->
+    <string name="weatherUpdateMinutes">180</string>
+</resources>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_diary_subject_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/ic_layout_message"
+    android:layout_marginHorizontal="10dp"
+    android:layout_marginVertical="10dp">
+
+    <TextView
+        android:id="@+id/textview_diary_subject_date"
+        android:text="yyyy년 MM월 dd일"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        />
+    <TextView
+        android:id="@+id/textview_diary_subject_address"
+        android:text="서울특별시 강북구 송이버섯로129 11-2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        />
+    <TextView
+        android:id="@+id/textview_diary_subject_count"
+        android:text="입질횟수: 10회"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        />
+
+</LinearLayout>

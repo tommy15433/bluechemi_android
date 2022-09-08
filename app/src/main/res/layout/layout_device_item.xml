@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal">
+
+
+    <!-- layout that holds device first level controllers -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- layout that shows dev name and connection -->
+        <LinearLayout
+            android:id="@+id/layout_device"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_weight="10"
+            android:layout_marginVertical="10dp"
+            android:layout_marginHorizontal="10dp"
+
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_battery_full"
+                android:rotation="90"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="10dp"/>
+            <TextView
+                android:id="@+id/textview_device_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Device Name"
+                android:layout_weight="2"
+                android:gravity="center_vertical"
+                android:autoSizeTextType="uniform"
+
+                />
+            <TextView
+                android:id="@+id/textview_device_connection"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="연결 안 됨"
+                android:layout_weight="5"
+                android:gravity="center_vertical"
+                android:autoSizeTextType="uniform"/>
+
+        </LinearLayout>
+        <!-- layout that shows play/pause button and setting button -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_device_options"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginVertical="10dp"
+            android:animateLayoutChanges="true"
+            android:visibility="visible"
+            >
+
+        <ImageButton
+            android:id="@+id/button_device_lightbulb"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:background="@drawable/ic_bulb_light_icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/button_device_playpause"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+
+        <ImageButton
+            android:id="@+id/button_device_playpause"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/ic_play"
+            app:layout_constraintStart_toEndOf="@+id/button_device_lightbulb"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/button_device_setting"
+            app:layout_constraintBottom_toBottomOf="parent"
+
+            />
+
+        <ImageButton
+            android:id="@+id/button_device_setting"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:background="@drawable/ic_bottomnavi_setting"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/button_device_playpause"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+
+    <!-- collapsable layout. Change name, sensitivity, brightness -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

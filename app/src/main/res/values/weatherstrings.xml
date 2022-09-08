@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pop">POP</string>
+    <string name="pty">PTY</string>
+    <string name="pcp">PCP</string>
+    <string name="reh">REH</string>
+    <string name="sno">SNO</string>
+    <string name="sky">SKY</string>
+    <string name="tmp">TMP</string>
+    <string name="tmn">TMN</string>
+    <string name="tmx">TMX</string>
+    <string name="uuu">UUU</string>
+    <string name="vvv">VVV</string>
+    <string name="wav">WAV</string>
+    <string name="vec">VEC</string>
+    <string name="wsd">WSD</string>
+</resources>

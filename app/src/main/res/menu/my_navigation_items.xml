@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/bottomnavi_devices"
+        android:title="Devices"
+        android:icon="@drawable/ic_bottomnavi_devices"/>
+
+    <item android:id="@+id/bottomnavi_noti"
+        android:title="Notification"
+        android:icon="@drawable/ic_bottomnavi_noti"/>
+
+
+    <item android:id="@+id/bottomnavi_diary"
+        android:title="Diary"
+        android:icon="@drawable/ic_bottomnavi_diary"/>
+
+    <item android:id="@+id/bottomnavi_setting"
+        android:title="Setting"
+        android:icon="@drawable/ic_bottomnavi_setting"/>
+
+</menu>
