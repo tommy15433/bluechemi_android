@@ -34,7 +34,7 @@ class DeviceSettingViewModel: ViewModel() {
     fun updateSensitivityUi(_uiValue: Int?){
         _uiValue?.let { _value ->
             UID?.let { _uid ->
-                Ble.instance.write(_uid, BlueChemiParameters.CHAR_SENS, Settings.Sensitivity.point2int(_value))
+                Ble.instance.write(_uid, BlueChemiParameters.CUSTOM_SENSE_UUID, Settings.Sensitivity.point2int(_value))
             }
 
         }
@@ -43,7 +43,7 @@ class DeviceSettingViewModel: ViewModel() {
     fun updateBrightnessUi(_uiValue: Int?){
         _uiValue?.let { _value ->
             UID?.let { _uid ->
-                Ble.instance.write(_uid, BlueChemiParameters.CHAR_LED, Settings.LedBrightness.point2int(_value))
+                Ble.instance.write(_uid, BlueChemiParameters.CUSTOM_LED_UUID, Settings.LedBrightness.point2int(_value))
             }
 
         }

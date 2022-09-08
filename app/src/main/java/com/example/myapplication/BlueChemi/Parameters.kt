@@ -1,28 +1,22 @@
 package com.example.myapplication.BlueChemi
 
+fun make(uuid16: String): String{
+        return "0000$uuid16-0000-1000-8000-00805f9b34fb"
+}
+
 object BlueChemiParameters {
 
         val DEVICE_NAME = "FishingBobber_Demo"
 
-        val SERVICE1_UUID = "000000EE-0000-1000-8000-00805f9b34fb"
-        val SERVICE2_UUID = "000000FF-0000-1000-8000-00805f9b34fb"
+        val SERVICE_UUID = "000000ee-0000-1000-8000-00805f9b34fb"
 
-        val CHAR_NOTI = "0000dd01-0000-1000-8000-00805f9b34fb"
-        val CHAR_LED = "0000ee01-0000-1000-8000-00805f9b34fb"
-        val CHAR_SENS = "0000ff01-0000-1000-8000-00805f9b34fb"
-
-        // todo make protocol
-        val CHAR_PLAYSTOP = "0000fg01-0000-1000-8000-00805f9b34fb"
+        val CUSTOM_SERVICE_UUID = make("00ff")
+        val CUSTOM_BITE_UUID = make("ff01")
+        val CUSTOM_LED_UUID = make("ff02")
+        val CUSTOM_SENSE_UUID = make("ff03")
+        val CUSTOM_PING_UUID = make("ff04")
+        val CUSTOM_START_UUID = make("ff05")
+        val CUSTOM_STOP_UUID = make("ff06")
+        val CUSTOM_BAT_UUID = make("ff07")
+        val CUSTOM_CUSTOM_UUID = make("ff08")
 }
-
-val SERVICE_UUID = "000000EE-0000-1000-8000-00805f9b34fb"
-
-val CUSTOM_SERVICE_UUID = "00FF"
-val CUSTOM_BITE_UUID = "FF01"
-val CUSTOM_LED_UUID = "FF02"
-val CUSTOM_SENSE_UUID = "FF03"
-val CUSTOM_PING_UUID = "FF04"
-val CUSTOM_START_UUID = "FF05"
-val CUSTOM_STOP_UUID = "FF06"
-val CUSTOM_BAT_UUID = "FF07"
-val CUSTOM_CUSTOM_UUID = "FF08"

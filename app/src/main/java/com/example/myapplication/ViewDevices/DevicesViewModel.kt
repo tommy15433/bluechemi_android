@@ -100,7 +100,7 @@ class DevicesViewModel: ViewModel() {
     }
     var cnt: Int = 0;
     fun test(uid: String){
-        Ble.instance.write(uid, BlueChemiParameters.CHAR_LED, cnt++)
+        Ble.instance.write(uid, BlueChemiParameters.CUSTOM_LED_UUID, cnt++)
     }
     fun pauseDevice(uid: String){
 
@@ -109,10 +109,10 @@ class DevicesViewModel: ViewModel() {
     }
     fun togglePlay(uid: String){
         if (mDevices.find { it.UID == uid }?.State == DevicesStateEnum.PLAYING){
-            Ble.instance.write(uid, BlueChemiParameters.CHAR_PLAYSTOP, 0)
+            Ble.instance.write(uid, BlueChemiParameters.CUSTOM_STOP_UUID, 1)
 
         }else{
-            Ble.instance.write(uid, BlueChemiParameters.CHAR_PLAYSTOP, 1)
+            Ble.instance.write(uid, BlueChemiParameters.CUSTOM_START_UUID, 1)
         }
     }
     fun toggleConnection(uid: String){

@@ -76,9 +76,9 @@ class Ble(val context: Context) {
 
     private fun uuid2char(uuid: UUID): String{
         when(uuid.toString()){
-            BlueChemiParameters.CHAR_NOTI -> return BlueChemiIntentFilters.ACTION_BITE_DETECTED
-            BlueChemiParameters.CHAR_SENS -> return BlueChemiIntentFilters.ACTION_SENSITIVITY_CHANGED
-            BlueChemiParameters.CHAR_LED -> return BlueChemiIntentFilters.ACTION_BRIGHTNESS_CHANGED
+            BlueChemiParameters.CUSTOM_BITE_UUID -> return BlueChemiIntentFilters.ACTION_BITE_DETECTED
+            BlueChemiParameters.CUSTOM_SENSE_UUID -> return BlueChemiIntentFilters.ACTION_SENSITIVITY_CHANGED
+            BlueChemiParameters.CUSTOM_LED_UUID -> return BlueChemiIntentFilters.ACTION_BRIGHTNESS_CHANGED
             else -> return ""
         }
     }
