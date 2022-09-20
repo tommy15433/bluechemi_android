@@ -115,6 +115,9 @@ class DevicesViewModel: ViewModel() {
             Ble.instance.write(uid, BlueChemiParameters.CUSTOM_START_UUID, 1)
         }
     }
+    fun devicePing(uid: String){
+        Ble.instance.write(uid, BlueChemiParameters.CUSTOM_PING_UUID, 1)
+    }
     fun toggleConnection(uid: String){
         Ble.instance.toggleConnection(uid)
     }

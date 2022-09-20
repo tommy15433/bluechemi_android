@@ -77,7 +77,8 @@ class FragmentDevices : Fragment() {
             }
 
             override fun onDeviceLightBulb(uid: String) {
-                TODO("Not yet implemented")
+                Log.i(TAG, "adapter on device lightbulb invoked\r\n"+"UID: " + uid + " name: " + "name")
+                model.devicePing(uid)
             }
 
         })
