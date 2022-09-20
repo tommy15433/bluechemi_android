@@ -140,6 +140,7 @@ class Ble(val context: Context) {
                     gatt?.let{
                         mConnections.find { it.uid == gatt.device.address.toString() }?.let { dev ->
                             dev.gatt = it
+                            dev.status = BleDevice.Status.connected
                         }
 
                         it.discoverServices()
@@ -151,6 +152,9 @@ class Ble(val context: Context) {
                 }
                 BluetoothGatt.STATE_DISCONNECTED ->{
                     gatt?.let {
+                        mConnections.find { it.uid == gatt.device.address.toString() }?.let { dev ->
+                            dev.status = BleDevice.Status.disconnected
+                        }
                         it.close()
                         sendBroadcast(BlueChemiIntentFilters.ACTION_GATT_DISCONENCTED, it.device.address)
                     }
@@ -263,13 +267,21 @@ class Ble(val context: Context) {
     @SuppressLint("MissingPermission")
     fun toggleConnection(mac: String){
         mConnections.find { it.uid == mac }?.let { bleDev ->
-            if (bleDev.gatt == null){
-                Log.i("Ble", "connect called")
-                bleDev.scan?.device?.connectGatt(context, false, gattCallBack)
-            }else{
+
+            if (bleDev.status == BleDevice.Status.connected){
+                bleDev.status = BleDevice.Status.disconnecting
+
                 Log.i("Ble", "disconnect called")
                 bleDev.gatt?.disconnect()
                 bleDev.gatt = null
+
+            }else if (bleDev.status == BleDevice.Status.disconnected){
+                bleDev.status = BleDevice.Status.connecting
+
+                Log.i("Ble", "connect called")
+                bleDev.scan?.device?.connectGatt(context, false, gattCallBack)
+            }else{
+                Log.i("Ble", "toggle connection busy")
             }
         }
     }

@@ -11,6 +11,11 @@ import kotlin.collections.ArrayList
 
 @SuppressLint("MissingPermission")
 class BleDevice {
+    enum class Status{
+        connecting, connected, disconnecting, disconnected
+    }
+    var status: Status = Status.disconnected
+
     var scan: ScanResult? = null
     var gatt: BluetoothGatt? = null
     val services: ArrayList<BluetoothGattService> = arrayListOf()
