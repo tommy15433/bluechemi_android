@@ -12,6 +12,7 @@ object Settings{
     open class SliderSetting(
         val min: Int,
         val max: Int,
+        val def: Int,
         val points: Int){
 
         fun getValues(): Array<Int>{
@@ -26,19 +27,19 @@ object Settings{
         }
 
         fun point2int(_p: Int): Int{
-            return getStepSize() * _p
+            return getStepSize() * _p + min
         }
 
         fun int2point(_i: Int): Int{
-            return _i / getStepSize()
+            return (_i - min) / getStepSize()
         }
     }
 
-    object LedBrightness : SliderSetting(0,255,10){
+    object LedBrightness : SliderSetting(0,255, 128,255){
 
     }
 
-    object Sensitivity : SliderSetting(8, 255, 3){
+    object Sensitivity : SliderSetting(8, 255,128, 255-8){
 
     }
 }
