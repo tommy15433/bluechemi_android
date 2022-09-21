@@ -2,13 +2,12 @@ package com.example.myapplication.comm
 
 import android.annotation.SuppressLint
 import android.bluetooth.*
-import android.bluetooth.le.BluetoothLeScanner
-import android.bluetooth.le.ScanCallback
-import android.bluetooth.le.ScanResult
+import android.bluetooth.le.*
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.example.myapplication.BlueChemi.BlueChemiIntentFilters
 import com.example.myapplication.BlueChemi.BlueChemiParameters
@@ -61,7 +60,12 @@ class Ble(val context: Context) {
     }
 
     val isEnabled: Boolean
-        get() = bluetoothAdapter.isEnabled
+        get() =
+            try{
+                bluetoothAdapter.isEnabled
+            }catch (e: Exception){
+                false
+            }
 
     val isPermissionsGranted: Boolean
         get() = (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
@@ -137,30 +141,24 @@ class Ble(val context: Context) {
 
             when (newState){
                 BluetoothGatt.STATE_CONNECTED ->{
-                    gatt?.let{
-                        mConnections.find { it.uid == gatt.device.address.toString() }?.let { dev ->
-                            dev.gatt = it
-                            dev.status = BleDevice.Status.connected
-                        }
-
-                        it.discoverServices()
-                        sendBroadcast(BlueChemiIntentFilters.ACTION_GATT_CONNECTED, it.device.address)
-                    }
+                    Log.i("BLE", "STATE_CONNECTED")
+                    gatt?.discoverServices()
                 }
                 BluetoothGatt.STATE_CONNECTING ->{
-
+                    Log.i("BLE", "STATE_CONNECTING")
                 }
                 BluetoothGatt.STATE_DISCONNECTED ->{
+                    Log.i("BLE", "STATE_DISCONNECTED")
                     gatt?.let {
                         mConnections.find { it.uid == gatt.device.address.toString() }?.let { dev ->
                             dev.status = BleDevice.Status.disconnected
                         }
-                        it.close()
+                        //it.close()
                         sendBroadcast(BlueChemiIntentFilters.ACTION_GATT_DISCONENCTED, it.device.address)
                     }
                 }
                 BluetoothGatt.STATE_DISCONNECTING ->{
-
+                    Log.i("BLE", "STATE_DISCONNECTING")
                 }
             }
         }
@@ -168,10 +166,14 @@ class Ble(val context: Context) {
         override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
             super.onServicesDiscovered(gatt, status)
 
-            val curDev: BleDevice? = mConnections.find { gatt?.device?.address == it.uid }
+            val curDev: BleDevice? = mConnections.find {
+                gatt?.device?.address == it.uid
+            }
 
             gatt?.services?.forEach{ service ->
-                curDev?.let{ it.services.add(service) }
+                curDev?.let{
+                    it.services.add(service)
+                }
 
                 service.characteristics.forEach{ characteristic ->
                     curDev?.let{ it.characteristics.add(characteristic) }
@@ -181,6 +183,12 @@ class Ble(val context: Context) {
 
                         gatt?.setCharacteristicNotification(characteristic, true)
                     }
+                }
+            }
+            curDev?.let{ dev ->
+                dev?.uid?.let{ uid ->
+                    sendBroadcast(BlueChemiIntentFilters.ACTION_GATT_CONNECTED, uid)
+                    dev.status = BleDevice.Status.connected
                 }
             }
         }
@@ -239,7 +247,9 @@ class Ble(val context: Context) {
 
         if (isScanning == false) {
 
-            bluetoothScanner.startScan(scanCallback)
+            val filter: ScanFilter = ScanFilter.Builder().setDeviceName("Blue Chemi").build()
+            val setting: ScanSettings = ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_POWER).build()
+            bluetoothScanner.startScan(arrayListOf(filter), setting, scanCallback)
             isScanning = true
         }
     }
@@ -260,26 +270,57 @@ class Ble(val context: Context) {
         Log.i("Ble", "removeUnconnected")
 
         val connected  = bluetoothManager.getConnectedDevices(BluetoothProfile.GATT)
+        val iterator = mConnections.iterator()
+        while (iterator.hasNext()){
+            val cur = iterator.next()
+            if (cur.status == BleDevice.Status.disconnected){
+                mConnections.remove(cur)
+                cur.uid?.let{
+                    sendBroadcast(BlueChemiIntentFilters.ACTION_SCAN_DEVICE_REMOVED, it, "")
+                }
+            }
+        }
 
         // todo: write code that manages mConnections or make mConnections List as a class to handle connected state
     }
 
+    fun connect(mac: String){
+        mConnections.find { it.uid == mac }?.let { bleDev ->
+            if (bleDev.status != BleDevice.Status.disconnected){
+                return;
+            }else{
+                bleDev.status = BleDevice.Status.connecting
+                if (bleDev.gatt != null){
+                    val connection = bleDev.gatt?.connect()
+                }else{
+                    bleDev.gatt = bleDev.scan?.device?.connectGatt(context, false, gattCallBack)
+                }
+            }
+        }
+    }
+    fun disconnect(mac: String){
+        mConnections.find { it.uid == mac }?.let { bleDev ->
+            if (bleDev.status != BleDevice.Status.connected){
+                return;
+
+            }else{
+                bleDev.status = BleDevice.Status.disconnecting
+                bleDev.gatt?.disconnect()
+                //bleDev.gatt?.close()
+            }
+        }
+    }
     @SuppressLint("MissingPermission")
     fun toggleConnection(mac: String){
         mConnections.find { it.uid == mac }?.let { bleDev ->
-
             if (bleDev.status == BleDevice.Status.connected){
-                bleDev.status = BleDevice.Status.disconnecting
 
                 Log.i("Ble", "disconnect called")
-                bleDev.gatt?.disconnect()
-                bleDev.gatt = null
-
+                disconnect(mac)
             }else if (bleDev.status == BleDevice.Status.disconnected){
-                bleDev.status = BleDevice.Status.connecting
-
                 Log.i("Ble", "connect called")
-                bleDev.scan?.device?.connectGatt(context, false, gattCallBack)
+                connect(mac)
+
             }else{
                 Log.i("Ble", "toggle connection busy")
             }
