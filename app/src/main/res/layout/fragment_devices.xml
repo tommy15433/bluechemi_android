@@ -8,7 +8,8 @@
     android:orientation="vertical">
 
 
-    <LinearLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swiprefreshlayout_recycler_devices"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -22,33 +23,7 @@
 
         </androidx.recyclerview.widget.RecyclerView>
 
-    </LinearLayout>
-
-    <!-- 진호참고. 아래 버튼2개는 테스트용으로 추후 제거예정이라
-    코드수정할때 ui위치같은거 신경 안 써도 됨 -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_weight="10">
-        <Button
-            android:id="@+id/button_scanStart"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="ScanStart"/>
-        <Button
-            android:id="@+id/button_scanStop"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="ScanStop"/>
-        <Button
-            android:id="@+id/button_test"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="TestBtn"/>
-
-    </LinearLayout>
-
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
 </LinearLayout>

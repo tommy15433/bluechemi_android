@@ -82,6 +82,7 @@ class DevicesViewModel: ViewModel() {
         toRemove?.let{
             mDevices.remove(it)
         }
+        updateLiveData()
     }
     fun addNewDevice(item: DevicesRecyclerItem){
         // todo ble search needed
