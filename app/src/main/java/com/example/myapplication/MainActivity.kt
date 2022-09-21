@@ -78,19 +78,6 @@ class MainActivity : AppCompatActivity() {
         registerBroadcast(this)
 
         notiChannelCreate()
-
-        // todo: this is testcode.
-        notiModel.add(NotificationItem(getCurrentDate(), getCurrentTime(), "서울", "맑음", "높음"))
-        notiModel.add(NotificationItem(getCurrentDate(), getCurrentTime(), "경기", "맑음", "높음"))
-        notiModel.add(NotificationItem(getCurrentDate(), getCurrentTime(), "부산", "맑음", "높음"))
-        notiModel.add(NotificationItem(getCurrentDate(), getCurrentTime(), "경기", "맑음", "높음"))
-        notiModel.add(NotificationItem(getCurrentDate(), getCurrentTime(), "부산", "맑음", "높음"))
-        notiModel.add(NotificationItem(getCurrentDate(), getCurrentTime(), "서울", "맑음", "높음"))
-        notiModel.add(NotificationItem(getCurrentDate(), getCurrentTime(), "경기", "맑음", "높음"))
-        notiModel.add(NotificationItem(getCurrentDate(), getCurrentTime(), "부산", "맑음", "높음"))
-        notiModel.add(NotificationItem(getCurrentDate(), getCurrentTime(), "서울", "맑음", "높음"))
-        notiModel.add(NotificationItem(getCurrentDate(), getCurrentTime(), "대구", "맑음", "높음"))
-
     }
 
     private fun initLocation() {
@@ -279,20 +266,14 @@ class MainActivity : AppCompatActivity() {
                             ("SKY" to ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.SKY)?.getInfo()?: "없음") as Pair<Any, Any>,
                             ("WAV" to ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.WAVE_HEIGHT)?.getInfo()?: "없음") as Pair<Any, Any>,
                         )
+//
+//                        val db = Firebase.firestore
+//                        db.collection(uid)
+//                            .document(noti.address)
+//                            .collection(noti.date)
+//                            .document(noti.time)
+//                            .set(map)
 
-                        val db = Firebase.firestore
-                        db.collection(uid)
-                            .document(noti.address)
-                            .collection(noti.date)
-                            .document(noti.time)
-                            .set(map)
-
-
-//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                            notiModel.add(NotificationItem(LocalDateTime.now().toString()))
-//                        }else{
-//                            notiModel.add(NotificationItem(Fun.getCurrentTime()))
-//                        }
                     }
                     else ->{
                         Log.i(mtag, "unhandled action")
