@@ -1,4 +1,4 @@
-package com.example.myapplication.ViewDevices
+package com.example.myapplication.viewDevices
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

@@ -3,7 +3,7 @@ package com.example.myapplication
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.myapplication.ViewDevices.DevicesRecyclerItem
+import com.example.myapplication.viewDevices.DevicesRecyclerItem
 import com.example.myapplication.BlueChemi.BiteLog
 
 class MainActivityViewModel : ViewModel() {

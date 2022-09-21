@@ -1,4 +1,4 @@
-package com.example.myapplication.ViewDevices
+package com.example.myapplication.viewDevices
 
 /**
  * @param UID Unique ID to identify selected device. Use MAC address of the device

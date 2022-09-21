@@ -1,12 +1,8 @@
-package com.example.myapplication.ViewDevices
+package com.example.myapplication.viewDevices
 
 import android.annotation.SuppressLint
-import android.bluetooth.BluetoothClass
-import android.bluetooth.le.ScanResult
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.example.myapplication.utils.*
 import com.example.myapplication.AppSettings.Settings

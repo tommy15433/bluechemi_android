@@ -24,10 +24,10 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.forEach
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.BlueChemi.BlueChemiIntentFilters
-import com.example.myapplication.ViewDevices.DeviceSettingViewModel
-import com.example.myapplication.ViewDevices.DevicesViewModel
-import com.example.myapplication.ViewDevices.FragmentDeviceSetting
-import com.example.myapplication.ViewDevices.FragmentDevices
+import com.example.myapplication.viewDevices.DeviceSettingViewModel
+import com.example.myapplication.viewDevices.DevicesViewModel
+import com.example.myapplication.viewDevices.FragmentDeviceSetting
+import com.example.myapplication.viewDevices.FragmentDevices
 import com.example.myapplication.ViewDiary.DiaryFragment
 import com.example.myapplication.ViewDiary.DiarySubjectViewModel
 import com.example.myapplication.viewnotification.FragmentNoti

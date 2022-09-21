@@ -1,87 +1,143 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ViewDevices.FragmentDeviceSetting"
-    android:orientation="vertical"
-    android:weightSum="20">
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+    <data>
+        <variable
+            name="viewmodel"
+            type="com.example.myapplication.viewDevices.DeviceSettingViewModel"/>
+    </data>
 
-    <LinearLayout
+
+
+    <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        tools:context=".viewDevices.FragmentDeviceSetting"
+        android:orientation="vertical"
+        android:weightSum="20">
 
-        <TextView
-            android:text="Name"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            android:textSize="15dp"/>
-
-        <!-- set inputtype text to force it singleline. then press enter will make keyboard disappear-->
-        <EditText
-            android:id="@+id/edittext_device_changename"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:imeOptions="actionDone"
-            android:inputType="text"/>
-        <ImageView
-            android:id="@+id/imageView_battery"
-            android:layout_margin="5dp"
-            android:layout_width="25dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_battery_full"/>
-    </LinearLayout>
+            android:orientation="horizontal">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2">
+            <TextView
+                android:text="Name"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:textSize="15dp"/>
 
-        <TextView
-            android:text="Sensitivity"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            android:textSize="15dp"
-            />
-        <SeekBar
-            android:id="@+id/seekbar_sensitivity"
+            <!-- set inputtype text to force it singleline. then press enter will make keyboard disappear-->
+            <EditText
+                android:id="@+id/edittext_device_changename"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:imeOptions="actionDone"
+                android:inputType="text"/>
+            <ImageView
+                android:id="@+id/imageView_battery"
+                android:layout_margin="5dp"
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_battery_full"/>
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"/>
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:orientation="horizontal"
+            >
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/textview_sensitivity"
+                android:text="Sensitivity"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:textSize="15dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/seekbar_sensitivity"
+                />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2">
+            <SeekBar
+                android:id="@+id/seekbar_sensitivity"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                app:layout_constraintLeft_toRightOf="@+id/textview_sensitivity"
+                app:layout_constraintRight_toLeftOf="@+id/textview_sensitivity_value"
+                android:progress='@{viewmodel.sensitivityProgress}'
+                android:onProgressChanged='@{viewmodel::onProgressSenseChanged}'
+                android:onStopTrackingTouch='@{viewmodel::onProgressSenseStopTracking}'
+                />
+            <TextView
+                android:id="@+id/textview_sensitivity_value"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:textSize="15sp"
+                android:gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:text='@{viewmodel.sensitivityString, default="255"}'
+                app:layout_constraintLeft_toRightOf="@+id/seekbar_sensitivity"
+                app:layout_constraintRight_toRightOf="parent"
+                />
 
-        <TextView
-            android:text="Brightness"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            android:textSize="15dp"
-            />
-        <SeekBar
-            android:id="@+id/seekbar_brightness"
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"/>
+            android:layout_height="0dp"
+            android:layout_weight="2">
+
+            <TextView
+                android:id="@+id/textview_brightness"
+                android:text="Brightness"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:textSize="15dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/seekbar_brightness"
+                />
+            <SeekBar
+                android:id="@+id/seekbar_brightness"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                app:layout_constraintLeft_toRightOf="@+id/textview_brightness"
+                app:layout_constraintRight_toLeftOf="@+id/textview_brightness_value"
+                android:progress='@{viewmodel.brightnessProgress}'
+                android:onProgressChanged='@{viewmodel::onProgressBrightnessChanged}'
+                android:onStopTrackingTouch='@{viewmodel::onProgressBrightnessStopTracking}'
+                />
+            <TextView
+                android:id="@+id/textview_brightness_value"
+                android:layout_width="35sp"
+                android:layout_height="match_parent"
+                app:layout_constraintLeft_toRightOf="@id/seekbar_brightness"
+                app:layout_constraintRight_toRightOf="parent"
+                android:gravity="center"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:text='@{viewmodel.brightnessString, default="255"}'
+                />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     </LinearLayout>
-
-
-</LinearLayout>
+</layout>

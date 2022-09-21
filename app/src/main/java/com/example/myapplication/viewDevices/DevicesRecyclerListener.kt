@@ -1,4 +1,4 @@
-package com.example.myapplication.ViewDevices
+package com.example.myapplication.viewDevices
 
 interface DevicesRecyclerListener {
     fun onDeviceChangeConnection(uid: String)

@@ -1,4 +1,4 @@
-package com.example.myapplication.ViewDevices
+package com.example.myapplication.viewDevices
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

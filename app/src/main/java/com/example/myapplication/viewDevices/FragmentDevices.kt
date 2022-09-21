@@ -1,4 +1,4 @@
-package com.example.myapplication.ViewDevices
+package com.example.myapplication.viewDevices
 
 import android.annotation.SuppressLint
 import android.os.Bundle

@@ -1,13 +1,8 @@
-package com.example.myapplication.ViewDevices
+package com.example.myapplication.viewDevices
 
-import android.app.AlertDialog
-import android.content.DialogInterface
-import android.opengl.Visibility
-import android.text.Layout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
