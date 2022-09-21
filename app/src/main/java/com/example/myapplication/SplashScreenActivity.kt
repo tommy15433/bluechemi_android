@@ -21,6 +21,35 @@ class SplashScreenActivity : AppCompatActivity() {
 
         supportActionBar?.hide()
 
+        // permissions
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if (Build.VERSION.SDK_INT >= 31){
+                requestPermissions(
+                    arrayOf(
+                        android.Manifest.permission.ACCESS_FINE_LOCATION,
+                        android.Manifest.permission.BLUETOOTH,
+                        android.Manifest.permission.BLUETOOTH_CONNECT,
+                        android.Manifest.permission.BLUETOOTH_SCAN),
+                    2
+                )
+            }else{
+                requestPermissions(
+                    arrayOf(
+                        android.Manifest.permission.ACCESS_FINE_LOCATION,
+                        android.Manifest.permission.BLUETOOTH),
+                    2
+                )
+            }
+        } else{
+            // no need for permissions if android version lower than M
+            // they give permission by force if needed
+            Handler().postDelayed({
+                val intent = Intent(this@SplashScreenActivity, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }, minDelayMs)
+        }
+
         Ble.initInstance(applicationContext)
         Locations.initInstance(applicationContext)
         Locations.instance?.startRequest()
@@ -34,35 +63,6 @@ class SplashScreenActivity : AppCompatActivity() {
                     finish()
                 }.show()
         }
-        else{
-            if (!Ble.instance.isPermissionsGranted){
-                AlertDialog.Builder(this)
-                    .setTitle("Permission Required")
-                    .setMessage("Allow Access Fine Location Permission?")
-                    .setPositiveButton("yes"){_, _ ->
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            requestPermissions(
-                                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                                2)
-                        }else{
-                            // if below API22 or Android 5.1
-                            // device permits automatically so no need to check
-                        }
-                    }.show()
-            }
-            else{
-                Handler().postDelayed({
-                    val intent = Intent(this@SplashScreenActivity, MainActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                }, minDelayMs)
-            }
-        }
-
-
-
-
-
     }
 
     override fun onRequestPermissionsResult(
@@ -73,13 +73,20 @@ class SplashScreenActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when(requestCode){
             2 -> {
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                if (grantResults.size > 0)
+                {
+                    grantResults.forEach {
+                        if (it != PackageManager.PERMISSION_GRANTED){
+                            finish()
+                        }
+                    }
                     Handler().postDelayed({
                         val intent = Intent(this@SplashScreenActivity, MainActivity::class.java)
                         startActivity(intent)
                         finish()
                     }, minDelayMs)
-                }else{
+                }
+                else{
                     finish()
                 }
             }
