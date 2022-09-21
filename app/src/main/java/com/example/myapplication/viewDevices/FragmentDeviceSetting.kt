@@ -1,6 +1,7 @@
 package com.example.myapplication.viewDevices
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -8,27 +9,21 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.SeekBar
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.myapplication.AppSettings.Settings
 import com.example.myapplication.R
+import com.example.myapplication.databinding.FragmentDeviceSettingBinding
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import java.lang.Exception
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_UID = "uid"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [FragmentDeviceSetting.newInstance] factory method to
- * create an instance of this fragment.
- */
 class FragmentDeviceSetting : Fragment() {
 
-    lateinit var editTextName: EditText
-    lateinit var seekbarSensitivity: SeekBar
-    lateinit var seekbarBrightness: SeekBar
-    lateinit var batteryImage: ImageView
+    val TAG = "Device Setting"
+
+    lateinit var mBinding: FragmentDeviceSettingBinding
 
     val model: DeviceSettingViewModel by activityViewModels()
 
@@ -42,68 +37,68 @@ class FragmentDeviceSetting : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_device_setting, container, false)
+        //val view = inflater.inflate(R.layout.fragment_device_setting, container, false)
+        mBinding = FragmentDeviceSettingBinding.inflate(inflater, container, false)
+        mBinding.lifecycleOwner = viewLifecycleOwner
+        mBinding.viewmodel = model
 
-        editTextName = view.findViewById(R.id.edittext_device_changename)
-        seekbarSensitivity = view.findViewById(R.id.seekbar_sensitivity)
-        seekbarBrightness = view.findViewById(R.id.seekbar_brightness)
-        batteryImage = view.findViewById(R.id.imageView_battery)
+        mBinding.seekbarBrightness.max = Settings.LedBrightness.max
+        mBinding.seekbarSensitivity.max = Settings.Sensitivity.max
 
-        seekbarSensitivity.max = Settings.Sensitivity.points - 1
-        model.sensitivityUi.value?.let {
-            if (it <= seekbarSensitivity.max){
-                seekbarSensitivity.progress = it
-            }else{
-                seekbarSensitivity.progress = 0
-            }
-        } ?: run {
-            seekbarSensitivity.progress = 0
+        model.UID?.let{
+            val db = Firebase.firestore
+            db.collection(it)
+                .document("Settings")
+                .get()
+                .addOnSuccessListener {
+                    it.data?.let{
+                        try{
+                            val brightness = (it.getOrDefault("brightness", Settings.LedBrightness.def) as Long).toInt()
+                            val sensitivity = (it.getOrDefault("sensitivity", Settings.Sensitivity.def) as Long).toInt()
+
+                            model.brightnessProgress.set(Settings.LedBrightness.int2point(brightness))
+                            model.sensitivityProgress.set(Settings.Sensitivity.int2point(sensitivity))
+                        }catch (e: Exception){
+                            Toast.makeText(context, "failed to read settings from server: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                }.addOnFailureListener {
+                    Log.i("device setting", "exception: ${it.message}")
+                    Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+                }
         }
-
-        seekbarBrightness.max = Settings.LedBrightness.points - 1
-        model.brightnessUi.value?.let {
-            if (it <= seekbarBrightness.max){
-                seekbarBrightness.progress = it
-            }else{
-                seekbarBrightness.progress = 0
-            }
-        } ?: run{
-            seekbarBrightness.progress = 0
-        }
-        registerListeners()
-
-        return view
-    }
-
-    fun registerListeners(){
-
-        seekbarBrightness.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                model.updateBrightnessUi(progress)
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-            }
-
-        })
-        seekbarSensitivity.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                model.updateSensitivityUi(progress)
-            }
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-            }
-
-        })
+        return mBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+    }
+
+    override fun onDestroyView() {
+        Log.i("device setting", "onDestroyView")
+
+        val settingData = hashMapOf(
+            "sensitivity" to model.sensitivityValue.get(),
+            "brightness" to model.brightnessValue.get()
+        )
+
+        val db = Firebase.firestore
+
+        model.UID?.let {
+            db.collection(it)
+                .document("Settings")
+                .set(settingData)
+                .addOnSuccessListener {
+                    Log.i("device setting", "db updated")
+                }
+                .addOnFailureListener{
+                    Log.i("device setting", "db update failed: ${it.message}")
+                }
+        }
+
+        super.onDestroyView()
 
     }
 

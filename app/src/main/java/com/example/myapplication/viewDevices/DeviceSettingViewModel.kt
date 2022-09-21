@@ -1,5 +1,8 @@
 package com.example.myapplication.viewDevices
 
+import android.util.Log
+import android.widget.SeekBar
+import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,34 +10,52 @@ import com.example.myapplication.AppSettings.Settings
 import com.example.myapplication.comm.Ble
 import com.example.myapplication.BlueChemi.BlueChemiParameters
 
+
 class DeviceSettingViewModel: ViewModel() {
 
-    // UI Values (corresponds to Setting's point value)
-    private val mSensitivityUi = MutableLiveData<Int>()
-    private val mBrightnessUi = MutableLiveData<Int>()
+    var sensitivityProgress = ObservableField<Int>()
+    var sensitivityValue = ObservableField<Int>()
+    var sensitivityString = ObservableField<String>()
+    var brightnessProgress = ObservableField<Int>()
+    var brightnessValue = ObservableField<Int>()
+    var brightnessString = ObservableField<String>()
 
-    // Device values (corresponds to Setting's int value)
-    private val mSensitivityDevice = MutableLiveData<Int>()
-    private val mBrightnessDevice = MutableLiveData<Int>()
+    fun onProgressSenseChanged(sb: SeekBar?, progress: Int, fromuser: Boolean){
+        val datavalue = Settings.Sensitivity.point2int(progress)
+        sensitivityProgress.set(progress)
+        sensitivityValue.set(datavalue)
+        sensitivityString.set(datavalue.toString())
+        if (!fromuser){
+            updateSensitivityUi(datavalue)
+        }
+    }
+    fun onProgressSenseStopTracking(sb: SeekBar?){
+        updateSensitivityUi(sensitivityValue.get())
+    }
+    fun onProgressBrightnessChanged(sb: SeekBar?, progress: Int, fromuser: Boolean){
+
+        val datavalue = Settings.LedBrightness.point2int(progress)
+        brightnessProgress.set(progress)
+        brightnessValue.set(datavalue)
+        brightnessString.set(datavalue.toString())
+
+        if (!fromuser){
+            updateBrightnessUi(datavalue)
+        }
+    }
+    fun onProgressBrightnessStopTracking(sb: SeekBar?){
+        updateBrightnessUi(brightnessValue.get())
+    }
 
     // UID
     var UID: String? = null
-
-    // observe below
-    val sensitivityUi: LiveData<Int>
-        get() = mSensitivityUi
-    val sensitivityDevice: LiveData<Int>
-        get() = mSensitivityDevice
-    val brightnessUi: LiveData<Int>
-        get() = mBrightnessUi
-    val brightnessDevice: LiveData<Int>
-        get() = mBrightnessDevice
 
 
     fun updateSensitivityUi(_uiValue: Int?){
         _uiValue?.let { _value ->
             UID?.let { _uid ->
-                Ble.instance.write(_uid, BlueChemiParameters.CUSTOM_SENSE_UUID, Settings.Sensitivity.point2int(_value))
+                //Ble.instance.write(_uid, BlueChemiParameters.CUSTOM_SENSE_UUID, Settings.Sensitivity.point2int(_value))
+                Ble.instance.write(_uid, BlueChemiParameters.CUSTOM_SENSE_UUID, _value)
             }
 
         }
@@ -43,22 +64,20 @@ class DeviceSettingViewModel: ViewModel() {
     fun updateBrightnessUi(_uiValue: Int?){
         _uiValue?.let { _value ->
             UID?.let { _uid ->
-                Ble.instance.write(_uid, BlueChemiParameters.CUSTOM_LED_UUID, Settings.LedBrightness.point2int(_value))
+                //Ble.instance.write(_uid, BlueChemiParameters.CUSTOM_LED_UUID, Settings.LedBrightness.point2int(_value))
+                Ble.instance.write(_uid, BlueChemiParameters.CUSTOM_LED_UUID, _value)
             }
 
         }
     }
-
     fun sensitivityUpdated(_devValue: Int?){
         _devValue?.let {
-            mSensitivityDevice.value = it
-            mSensitivityUi.value = Settings.Sensitivity.int2point(it)
+
         }
     }
     fun brightnessUpdated(_devValue: Int?){
         _devValue?.let {
-            mBrightnessDevice.value = it
-            mBrightnessUi.value = Settings.LedBrightness.int2point(it)
+
         }
     }
 }
