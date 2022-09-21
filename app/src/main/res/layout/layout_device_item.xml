@@ -17,7 +17,7 @@
         <LinearLayout
             android:id="@+id/layout_device"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="50sp"
             android:orientation="horizontal"
             android:layout_weight="10"
             android:layout_marginVertical="10dp"
@@ -37,8 +37,9 @@
                 android:layout_height="match_parent"
                 android:text="Device Name"
                 android:layout_weight="2"
-                android:gravity="center_vertical"
-                android:autoSizeTextType="uniform"
+                android:gravity="center"
+                android:textSize="15dp"
+
 
                 />
             <TextView
@@ -47,8 +48,8 @@
                 android:layout_height="match_parent"
                 android:text="연결 안 됨"
                 android:layout_weight="5"
-                android:gravity="center_vertical"
-                android:autoSizeTextType="uniform"/>
+                android:gravity="center"
+                android:textSize="15dp"/>
 
         </LinearLayout>
         <!-- layout that shows play/pause button and setting button -->
