@@ -83,6 +83,8 @@ class Ble(val context: Context) {
             BlueChemiParameters.CUSTOM_BITE_UUID -> return BlueChemiIntentFilters.ACTION_BITE_DETECTED
             BlueChemiParameters.CUSTOM_SENSE_UUID -> return BlueChemiIntentFilters.ACTION_SENSITIVITY_CHANGED
             BlueChemiParameters.CUSTOM_LED_UUID -> return BlueChemiIntentFilters.ACTION_BRIGHTNESS_CHANGED
+            BlueChemiParameters.CUSTOM_START_UUID -> return BlueChemiIntentFilters.ACTION_PLAY
+            BlueChemiParameters.CUSTOM_STOP_UUID -> return BlueChemiIntentFilters.ACTION_STOP
             else -> return ""
         }
     }

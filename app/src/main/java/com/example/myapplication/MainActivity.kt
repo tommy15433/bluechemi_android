@@ -207,7 +207,9 @@ class MainActivity : AppCompatActivity() {
             BlueChemiIntentFilters.ACTION_PLAYSTOP_CHANGED,
             BlueChemiIntentFilters.ACTION_BRIGHTNESS_CHANGED,
             BlueChemiIntentFilters.ACTION_SENSITIVITY_CHANGED,
-            BlueChemiIntentFilters.ACTION_BITE_DETECTED)
+            BlueChemiIntentFilters.ACTION_BITE_DETECTED,
+            BlueChemiIntentFilters.ACTION_PLAY,
+            BlueChemiIntentFilters.ACTION_STOP)
 
         val broadcastReceiver: BroadcastReceiver = object: BroadcastReceiver(){
             override fun onReceive(context: Context?, intent: Intent?) {
@@ -238,8 +240,14 @@ class MainActivity : AppCompatActivity() {
                         if (valint == 1){
                             model.devicePlayed(uid)
                         }else{
-                            model.devicePlayed(uid)
+                            model.devicePaused(uid)
                         }
+                    }
+                    BlueChemiIntentFilters.ACTION_PLAY -> {
+                        model.devicePlayed(uid)
+                    }
+                    BlueChemiIntentFilters.ACTION_STOP -> {
+                        model.devicePaused(uid)
                     }
                     BlueChemiIntentFilters.ACTION_BRIGHTNESS_CHANGED -> {
                         devSettingModel.brightnessUpdated(valint)

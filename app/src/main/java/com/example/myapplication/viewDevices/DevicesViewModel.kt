@@ -129,9 +129,11 @@ class DevicesViewModel: ViewModel() {
     }
     fun devicePlayed(uid: String){
         mDevices.find { it.UID == uid }?.State = DevicesStateEnum.PLAYING
+        updateLiveData()
     }
     fun devicePaused(uid: String){
         mDevices.find { it.UID == uid }?.State = DevicesStateEnum.STOPPED
+        updateLiveData()
     }
 
     fun setDeviceName(uid: String, name: String){
