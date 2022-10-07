@@ -45,9 +45,9 @@ class FragmentDeviceSetting : Fragment() {
         mBinding.seekbarBrightness.max = Settings.LedBrightness.max
         mBinding.seekbarSensitivity.max = Settings.Sensitivity.max
 
-        model.UID?.let{
+        model.UID?.let{ mac ->
             val db = Firebase.firestore
-            db.collection(it)
+            db.collection(mac)
                 .document("Settings")
                 .get()
                 .addOnSuccessListener {
