@@ -7,6 +7,8 @@ import android.view.View
 import android.widget.ImageView
 import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.slider.Slider
+import kotlin.math.abs
+
 object Settings{
 
     open class SliderSetting(
@@ -22,24 +24,30 @@ object Settings{
             }
         }
 
-        fun getStepSize(): Int{
+        open fun getStepSize(): Int{
             return (max - min) / (points)
         }
 
-        fun point2int(_p: Int): Int{
+        open fun point2int(_p: Int): Int{
             return getStepSize() * _p + min
         }
 
-        fun int2point(_i: Int): Int{
+        open fun int2point(_i: Int): Int{
             return (_i - min) / getStepSize()
         }
     }
 
     object LedBrightness : SliderSetting(0,255, 128,255){
+        override fun point2int(_p: Int): Int {
+            return abs(max - super.point2int(_p))
+        }
 
+        override fun int2point(_i: Int): Int {
+            return abs(points - super.int2point(_i))
+        }
     }
 
-    object Sensitivity : SliderSetting(8, 255 - 8,128, 255-8){
+    object Sensitivity : SliderSetting(8, 255 - 8,128, 255-16){
 
     }
 }
