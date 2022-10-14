@@ -270,20 +270,23 @@ class Ble(val context: Context) {
     fun removeUnconnected(){
 
         Log.i("Ble", "removeUnconnected")
-
-        val connected  = bluetoothManager.getConnectedDevices(BluetoothProfile.GATT)
-        val iterator = mConnections.iterator()
-        while (iterator.hasNext()){
-            val cur = iterator.next()
-            if (cur.status == BleDevice.Status.disconnected){
-                mConnections.remove(cur)
-                cur.uid?.let{
-                    sendBroadcast(BlueChemiIntentFilters.ACTION_SCAN_DEVICE_REMOVED, it, "")
+        try{
+            val connected  = bluetoothManager.getConnectedDevices(BluetoothProfile.GATT)
+            val iterator = mConnections.iterator()
+            while (iterator.hasNext()){
+                val cur = iterator.next()
+                if (cur.status == BleDevice.Status.disconnected){
+                    mConnections.remove(cur)
+                    cur.uid?.let{
+                        sendBroadcast(BlueChemiIntentFilters.ACTION_SCAN_DEVICE_REMOVED, it, "")
+                    }
                 }
             }
+        }catch (e: Exception){
+            // todo: write error handling code which throws error to server
         }
 
-        // todo: write code that manages mConnections or make mConnections List as a class to handle connected state
+        
     }
 
     fun connect(mac: String){
