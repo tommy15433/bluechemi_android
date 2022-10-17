@@ -18,16 +18,14 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.forEach
 import androidx.lifecycle.ViewModelProvider
+import com.example.myapplication.AppSettings.Settings
 import com.example.myapplication.BlueChemi.BlueChemiIntentFilters
-import com.example.myapplication.viewDevices.DeviceSettingViewModel
-import com.example.myapplication.viewDevices.DevicesViewModel
-import com.example.myapplication.viewDevices.FragmentDeviceSetting
-import com.example.myapplication.viewDevices.FragmentDevices
 import com.example.myapplication.ViewDiary.DiaryFragment
 import com.example.myapplication.ViewDiary.DiarySubjectViewModel
 import com.example.myapplication.viewnotification.FragmentNoti
@@ -35,12 +33,14 @@ import com.example.myapplication.viewnotification.FragmentNotiListener
 import com.example.myapplication.viewnotification.NotificationItem
 import com.example.myapplication.viewnotification.NotificationViewModel
 import com.example.myapplication.utils.*
+import com.example.myapplication.viewDevices.*
 import com.example.myapplication.weatherApi.ForecastParser
 import com.example.myapplication.weatherApi.ForecastResponse
 import com.google.android.gms.location.LocationResult
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.lang.Exception
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -114,9 +114,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun showDeviceSetting(uid: String) {
+    fun showDeviceSetting(dev: DevicesRecyclerItem) {
 
-        devSettingModel.UID = uid
+        devSettingModel.UID = dev.UID
 
         bottomNavigationView.menu.forEach {
             it.isEnabled = false
@@ -124,74 +124,65 @@ class MainActivity : AppCompatActivity() {
 
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.linearlayout_fragment, FragmentDeviceSetting())
-            .addToBackStack("preFragment")
+            .replace(R.id.linearlayout_fragment, FragmentDeviceSetting().apply {
+                arguments = Bundle().apply {
+                    putString(FragmentDeviceSetting.ARG_USERNAME, dev.Name)
+                    putInt(FragmentDeviceSetting.ARG_SENSE, dev.Sensitivity)
+                    putInt(FragmentDeviceSetting.ARG_BRIGHTNESS, dev.Brightness)
+                }
+            })
+            .addToBackStack("preFragDev")
             .commitAllowingStateLoss()
     }
 
     override fun onBackPressed() {
+
         if (supportFragmentManager.backStackEntryCount > 0) {
             bottomNavigationView.menu.forEach {
                 it.isEnabled = true
+
             }
-            supportFragmentManager.popBackStack()
+            // LIFO
+            if (supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 1).name == "preFragDev") {
+                devSettingModel.UID?.let { uid ->
+                    val name = devSettingModel.usernameString.get()
+                        ?: getString(R.string.db_username_default)
+                    val sense = devSettingModel.sensitivityValue.get() ?: Settings.Sensitivity.def
+                    val bright = devSettingModel.brightnessValue.get() ?: Settings.LedBrightness.def
+
+                    val settingData = hashMapOf(
+                        getString(R.string.db_sensitivity) to sense,
+                        getString(R.string.db_brightness) to bright,
+                        getString(R.string.db_username) to name
+                    )
+
+                    Firebase.firestore
+                        .collection(uid)
+                        .document(getString(R.string.db_doc_setting))
+                        .set(settingData)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "server updated", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(
+                                this,
+                                "server upate failed: ${it.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                    model.getDevice(uid)?.let {
+                        it.Brightness = bright ?: Settings.LedBrightness.def
+                        it.Sensitivity = sense ?: Settings.Sensitivity.def
+                        it.Name = name ?: getString(R.string.db_username_default)
+                    }
+                }
+
+                supportFragmentManager.popBackStack()
+            }
         } else {
             //super.onBackPressed()
             moveTaskToBack(true)
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        Log.i(TAG, "onRequestPermissionsResult call")
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            3 -> {
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.i(TAG, "access fine permission granted")
-                } else {
-                    Log.i(TAG, "access fine grant failed")
-                }
-                if (grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                    Log.i(TAG, "Manifest.permission.ACCESS_COARSE_LOCATION, permission granted")
-                } else {
-                    Log.i(
-                        TAG,
-                        "Manifest.permission.ACCESS_COARSE_LOCATION, permission grant failed"
-                    )
-                }
-
-                if (grantResults[2] == PackageManager.PERMISSION_GRANTED) {
-                    Log.i(TAG, "BLUETOOTH permission granted")
-                } else {
-                    Log.i(TAG, "BLUETOOTH permission grant failed")
-                }
-
-                if (grantResults[3] == PackageManager.PERMISSION_GRANTED) {
-                    Log.i(TAG, "Manifest.permission.BLUETOOTH_ADMIN permission granted")
-                } else {
-                    Log.i(TAG, "Manifest.permission.BLUETOOTH_ADMIN permission grant failed")
-                }
-
-                if (grantResults[4] == PackageManager.PERMISSION_GRANTED) {
-                    Log.i(TAG, "Advertise permission granted")
-                } else {
-                    Log.i(TAG, "Advertise permission grant failed")
-                }
-                if (grantResults[5] == PackageManager.PERMISSION_GRANTED) {
-                    Log.i(TAG, "BLUETOOTH_CONNECT permission granted")
-                } else {
-                    Log.i(TAG, "BLUETOOTH_CONNECT permission grant failed")
-                }
-                if (grantResults[6] == PackageManager.PERMISSION_GRANTED) {
-                    Log.i(TAG, "BLUETOOTH_SCAN permission granted")
-                } else {
-                    Log.i(TAG, "BLUETOOTH_SCAN permission grant failed")
-                }
-            }
         }
     }
 
@@ -225,7 +216,33 @@ class MainActivity : AppCompatActivity() {
 
                 when (intent?.action){
                     BlueChemiIntentFilters.ACTION_SCAN_DEVICE_ADDED -> {
-                        model.addNewDevice(uid, valstr)
+                        val db = Firebase.firestore
+                        db
+                            .collection(uid)
+                            .document(getString(R.string.db_doc_setting))
+                            .get()
+                            .addOnSuccessListener {
+                                it.data?.let{
+                                    try{
+                                        val brightness = (it.getOrDefault(getString(R.string.db_brightness), Settings.LedBrightness.def) as Long).toInt()
+                                        val sensitivity = (it.getOrDefault(getString(R.string.db_sensitivity), Settings.Sensitivity.def) as Long).toInt()
+                                        val name = it.getOrDefault(getString(R.string.db_username), getString(R.string.db_username_default)) as String
+
+                                        model.addNewDevice(uid, name, sensitivity, brightness)
+                                    }catch (e: Exception){
+                                        Toast.makeText(context, "failed to read settings from server: ${e.message}", Toast.LENGTH_SHORT).show()
+                                        model.addNewDevice(uid, getString(R.string.db_username_default), Settings.Sensitivity.def, Settings.LedBrightness.def)
+                                    }
+                                }?:run{
+                                    Toast.makeText(context, "no data available. setting to initial", Toast.LENGTH_SHORT).show()
+                                    model.addNewDevice(uid, getString(R.string.db_username_default), Settings.Sensitivity.def, Settings.LedBrightness.def)
+                                }
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(context, "failed to read settings from server: ${it.message}", Toast.LENGTH_SHORT).show()
+                                model.addNewDevice(uid, getString(R.string.db_username_default), Settings.Sensitivity.def, Settings.LedBrightness.def)
+                            }
+
                     }
                     BlueChemiIntentFilters.ACTION_SCAN_DEVICE_REMOVED -> {
                         model.removeDevice(uid)

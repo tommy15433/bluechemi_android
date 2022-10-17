@@ -21,7 +21,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:orientation="horizontal">
 
             <TextView
@@ -40,7 +40,9 @@
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:imeOptions="actionDone"
-                android:inputType="text"/>
+                android:inputType="text"
+                android:textSize="30dp"
+                android:text='@={viewmodel.usernameString}'/>
             <ImageView
                 android:id="@+id/imageView_battery"
                 android:layout_margin="5dp"

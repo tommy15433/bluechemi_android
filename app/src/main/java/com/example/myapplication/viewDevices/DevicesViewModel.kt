@@ -1,6 +1,7 @@
 package com.example.myapplication.viewDevices
 
 import android.annotation.SuppressLint
+import android.os.Handler
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -55,14 +56,14 @@ class DevicesViewModel: ViewModel() {
 
         updateLiveData()
     }
-    fun addNewDevice(uid: String, name: String?){
+    fun addNewDevice(uid: String, name: String, sensitivity: Int, brightness: Int){
         mDevices.add(DevicesRecyclerItem(
             uid,
-            name ?: "null",
+            name,
             Connection.DISCONNECTED,
             DevicesStateEnum.STOPPED,
-            Settings.Sensitivity.min,
-            Settings.LedBrightness.min,
+            sensitivity,
+            brightness,
             100
         ))
         updateLiveData()
@@ -120,8 +121,18 @@ class DevicesViewModel: ViewModel() {
     }
 
     fun deviceConnected(uid: String){
-        mDevices.find { it.UID == uid }?.Connection = Connection.CONNECTED
-        updateLiveData()
+        mDevices.find { it.UID == uid }?.let{
+            it.Connection = Connection.CONNECTED
+
+            Ble.instance.write(uid, BlueChemiParameters.CUSTOM_SENSE_UUID, it.Sensitivity)
+            Handler().postDelayed({
+                Ble.instance.write(uid, BlueChemiParameters.CUSTOM_LED_UUID, it.Brightness)
+            }, 1000)
+
+            updateLiveData()
+
+        }
+
     }
     fun deviceDisconnected(uid: String){
         mDevices.find { it.UID == uid }?.Connection = Connection.DISCONNECTED
@@ -140,6 +151,14 @@ class DevicesViewModel: ViewModel() {
 
         mDevices.find { it.UID == uid }?.Name = name
         updateLiveData()
+    }
+
+    fun getDevice(uid: String): DevicesRecyclerItem?{
+        mDevices.find { it.UID == uid }?.let {
+            return it
+        }?: run{
+            return null
+        }
     }
 
 }

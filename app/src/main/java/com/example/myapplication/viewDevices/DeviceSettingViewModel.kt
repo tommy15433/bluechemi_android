@@ -20,6 +20,8 @@ class DeviceSettingViewModel: ViewModel() {
     var brightnessValue = ObservableField<Int>()
     var brightnessString = ObservableField<String>()
 
+    var usernameString = ObservableField<String>()
+
     fun onProgressSenseChanged(sb: SeekBar?, progress: Int, fromuser: Boolean){
         val datavalue = Settings.Sensitivity.point2int(progress)
         sensitivityProgress.set(progress)

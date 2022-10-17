@@ -10,6 +10,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -82,7 +84,11 @@ class FragmentDevices : Fragment() {
 
             }
             override fun onDeviceSetting(uid: String) {
-                (activity as MainActivity).showDeviceSetting(uid)
+                model.getDevice(uid)?.let{
+                    (activity as MainActivity).showDeviceSetting(it)
+                }?: run{
+                    Toast.makeText(activity, "device unknown", Toast.LENGTH_SHORT).show()
+                }
             }
 
             override fun onDeviceLightBulb(uid: String) {

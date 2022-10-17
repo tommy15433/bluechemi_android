@@ -21,6 +21,12 @@ import java.lang.Exception
 
 class FragmentDeviceSetting : Fragment() {
 
+    companion object{
+        val ARG_SENSE = "sensitivity"
+        val ARG_BRIGHTNESS = "brightness"
+        val ARG_USERNAME = "username"
+    }
+
     val TAG = "Device Setting"
 
     lateinit var mBinding: FragmentDeviceSettingBinding
@@ -45,60 +51,34 @@ class FragmentDeviceSetting : Fragment() {
         mBinding.seekbarBrightness.max = Settings.LedBrightness.max
         mBinding.seekbarSensitivity.max = Settings.Sensitivity.max
 
-        model.UID?.let{ mac ->
-            val db = Firebase.firestore
-            db.collection(mac)
-                .document("Settings")
-                .get()
-                .addOnSuccessListener {
-                    it.data?.let{
-                        try{
-                            val brightness = (it.getOrDefault("brightness", Settings.LedBrightness.def) as Long).toInt()
-                            val sensitivity = (it.getOrDefault("sensitivity", Settings.Sensitivity.def) as Long).toInt()
+        arguments?.let {
+            try{
+                val b = it.getInt(ARG_BRIGHTNESS, Settings.LedBrightness.def)
+                val s = it.getInt(ARG_SENSE, Settings.Sensitivity.def)
+                val n = it.getString(ARG_USERNAME, getString(R.string.db_username_default))
 
-                            model.brightnessProgress.set(Settings.LedBrightness.int2point(brightness))
-                            model.sensitivityProgress.set(Settings.Sensitivity.int2point(sensitivity))
-                        }catch (e: Exception){
-                            Toast.makeText(context, "failed to read settings from server: ${e.message}", Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                val uib = Settings.LedBrightness.int2point(b)
+                val uis = Settings.Sensitivity.int2point(s)
+                model.sensitivityProgress.set(uis)
+                model.brightnessProgress.set(uib)
 
-                }.addOnFailureListener {
-                    Log.i("device setting", "exception: ${it.message}")
-                    Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
-                }
+                model.usernameString.set(n)
+            } catch (e: Exception){
+                model.brightnessProgress.set(Settings.LedBrightness.int2point(Settings.LedBrightness.def))
+                model.sensitivityProgress.set(Settings.Sensitivity.int2point(Settings.Sensitivity.def))
+                model.usernameString.set(getString(R.string.db_username_default))
+            }
+        }?: run{
+            model.brightnessProgress.set(Settings.LedBrightness.int2point(Settings.LedBrightness.def))
+            model.sensitivityProgress.set(Settings.Sensitivity.int2point(Settings.Sensitivity.def))
+            model.usernameString.set(getString(R.string.db_username_default))
         }
+
         return mBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-    }
-
-    override fun onDestroyView() {
-        Log.i("device setting", "onDestroyView")
-
-        val settingData = hashMapOf(
-            "sensitivity" to model.sensitivityValue.get(),
-            "brightness" to model.brightnessValue.get()
-        )
-
-        val db = Firebase.firestore
-
-        model.UID?.let {
-            db.collection(it)
-                .document("Settings")
-                .set(settingData)
-                .addOnSuccessListener {
-                    Log.i("device setting", "db updated")
-                }
-                .addOnFailureListener{
-                    Log.i("device setting", "db update failed: ${it.message}")
-                }
-        }
-
-        super.onDestroyView()
 
     }
 
