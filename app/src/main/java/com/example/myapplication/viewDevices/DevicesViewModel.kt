@@ -125,9 +125,8 @@ class DevicesViewModel: ViewModel() {
             it.Connection = Connection.CONNECTED
 
             Ble.instance.write(uid, BlueChemiParameters.CUSTOM_SENSE_UUID, it.Sensitivity)
-            Handler().postDelayed({
-                Ble.instance.write(uid, BlueChemiParameters.CUSTOM_LED_UUID, it.Brightness)
-            }, 1000)
+            Ble.instance.write(uid, BlueChemiParameters.CUSTOM_LED_UUID, it.Brightness)
+
 
             updateLiveData()
 

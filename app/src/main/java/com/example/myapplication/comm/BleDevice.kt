@@ -28,3 +28,7 @@ class BleDevice {
         get() = scan?.device?.name
 
 }
+
+enum class operation {
+    connect, disconnect, read, write
+}

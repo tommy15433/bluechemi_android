@@ -20,8 +20,122 @@ import kotlin.collections.ArrayList
 // Creating new class object may cause memory leak
 class Ble(val context: Context) {
 
+    private var _isConnectionBusy: Boolean = false
+    private var _isTxBusy: Boolean = false
+    private var _isRxBusy: Boolean = false
+
+    private val _isBusy: Boolean
+        get(){
+            return _isConnectionBusy || _isTxBusy || _isRxBusy
+        }
+    val TAG = "BLE"
+
     object LocationPermissionException: Exception("Location Permission Required")
     object InitializeInstanceException: Exception("Call Ble.initInstance(context) first")
+
+    fun clearFlags(){
+        try{
+            _isConnectionBusy = false
+            _isTxBusy = false
+            _isRxBusy = false
+        }catch (e:Exception){
+            clearFlags()
+        }
+    }
+    object handler: Runnable{
+
+        private val RESETTIMER_INTV: Long = 10
+        private val RESETTIMER_MAX = 200
+        private var resetTimer = 0
+        var queue:PriorityQueue<BleRunnableType> = PriorityQueue()
+
+        fun add(action: BleRunnableType){
+            queue.add(action)
+            Log.i("BLE", "action added, cur count: ${queue.count()}")
+        }
+        override fun run() {
+            while (true){
+                try{
+                    if (instance._isBusy){
+                        Thread.sleep(RESETTIMER_INTV)
+                        if (resetTimer++ > RESETTIMER_MAX){
+                            instance.clearFlags()
+                            resetTimer = 0
+                            //todo: handle busy error
+                            Log.i("BLE", "reset timer reset")
+                            queue.clear()
+                        }else{
+
+                        }
+                    }else{
+                        resetTimer = 0
+                        Thread.sleep(50)
+                        val pop = queue.poll()
+                        //Log.i("BLE", "queue popped ${pop.toString()}}")
+                            pop?.let { it ->
+
+                            when (it.op){
+                                operation.connect -> {
+                                    if (it.dev.gatt == null){
+                                        instance._isConnectionBusy = true
+                                        it.dev.gatt = it.dev.scan?.device?.connectGatt(instance.context, false, instance.gattCallBack)
+                                    }else{
+
+                                    }
+                                }
+                                operation.disconnect -> {
+                                    if (it.dev.gatt != null){
+                                        instance._isConnectionBusy = true
+                                        it.dev.gatt?.disconnect()
+                                    }else{
+
+                                    }
+                                }
+                                operation.read -> {
+
+                                    val chartoread = it.char
+                                    if (chartoread != null){
+                                        it.dev.characteristics.find { chars ->
+                                            val cur = chars.uuid.toString()
+                                            cur == chartoread}?.let { found ->
+                                            instance._isRxBusy = true
+                                            it.dev.gatt?.readCharacteristic(found)
+                                        }
+                                    }else{
+                                    }
+                                }
+                                operation.write -> {
+                                    instance._isTxBusy = true
+                                    val chartowrite = it.char
+                                    val valuetowrite = it.data
+                                    if (chartowrite != null && valuetowrite != null){
+                                        it.dev.characteristics.find { chars ->
+                                            val cur = chars.uuid.toString()
+                                            cur == chartowrite
+                                        }?.let { found ->
+                                            try{
+                                                instance._isTxBusy = true
+                                                found.value = toByteArray(valuetowrite)
+                                                it.dev.gatt?.writeCharacteristic(found)
+                                            }catch (e: Exception){
+                                                Log.i("BLE", "error ${e.message}")
+                                            }
+
+                                        }
+                                    }else{
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch (e: Exception){
+                    Log.i("BLE", e.message.toString())
+                }
+
+            }
+        }
+    }
 
     companion object{
         lateinit var instance: Ble
@@ -33,6 +147,7 @@ class Ble(val context: Context) {
             if (isInitialized == false){
                 isInitialized = true
                 instance = Ble(context)
+                Thread(handler).start()
             }
             return instance
         }
@@ -154,6 +269,9 @@ class Ble(val context: Context) {
                     gatt?.let {
                         mConnections.find { it.uid == gatt.device.address.toString() }?.let { dev ->
                             dev.status = BleDevice.Status.disconnected
+                            dev.gatt?.close()
+                            dev.gatt = null
+                            clearFlags()
                         }
                         //it.close()
                         sendBroadcast(BlueChemiIntentFilters.ACTION_GATT_DISCONENCTED, it.device.address)
@@ -191,6 +309,7 @@ class Ble(val context: Context) {
                 dev?.uid?.let{ uid ->
                     sendBroadcast(BlueChemiIntentFilters.ACTION_GATT_CONNECTED, uid)
                     dev.status = BleDevice.Status.connected
+                    clearFlags()
                 }
             }
         }
@@ -219,11 +338,14 @@ class Ble(val context: Context) {
         ) {
             super.onCharacteristicRead(gatt, characteristic, status)
 
+            Log.i(TAG, "onCharRead: ${characteristic.toString()}, result: ${status.toString()}")
+
             val action: String = characteristic?.uuid?.let { uuid2char(it) } ?: "null"
             val mac = gatt?.device?.address.toString()
             val value = characteristic?.value?.let { toInt32(it, 0) }
 
             sendBroadcast(action, mac, value)
+            clearFlags()
 
         }
 
@@ -234,11 +356,16 @@ class Ble(val context: Context) {
         ) {
             super.onCharacteristicWrite(gatt, characteristic, status)
 
+
+            Log.i(TAG, "onCharWrite: ${characteristic.toString()}, result: ${status.toString()}")
+
             val action: String = characteristic?.uuid?.let { uuid2char(it) } ?: "null"
             val mac = gatt?.device?.address.toString()
             val value = characteristic?.value?.let { toInt32(it, 0) }
 
             sendBroadcast(action, mac, value)
+
+            clearFlags()
         }
 
     }
@@ -291,28 +418,12 @@ class Ble(val context: Context) {
 
     fun connect(mac: String){
         mConnections.find { it.uid == mac }?.let { bleDev ->
-            if (bleDev.status != BleDevice.Status.disconnected){
-                return;
-            }else{
-                bleDev.status = BleDevice.Status.connecting
-                if (bleDev.gatt != null){
-                    val connection = bleDev.gatt?.connect()
-                }else{
-                    bleDev.gatt = bleDev.scan?.device?.connectGatt(context, false, gattCallBack)
-                }
-            }
+            handler.add(BleRunnableType(bleDev, operation.connect, null, null))
         }
     }
     fun disconnect(mac: String){
         mConnections.find { it.uid == mac }?.let { bleDev ->
-            if (bleDev.status != BleDevice.Status.connected){
-                return;
-
-            }else{
-                bleDev.status = BleDevice.Status.disconnecting
-                bleDev.gatt?.disconnect()
-                //bleDev.gatt?.close()
-            }
+            handler.add(BleRunnableType(bleDev, operation.disconnect, null, null))
         }
     }
     @SuppressLint("MissingPermission")
@@ -339,13 +450,8 @@ class Ble(val context: Context) {
 
         mConnections
             .find { it.uid == devUid }
-            ?.let{ curConnection ->
-                curConnection.characteristics
-                    ?.find { it.uuid.toString() == charUuid }
-                    ?.let{
-                        it.value = toByteArray(value)
-                        curConnection.gatt?.writeCharacteristic(it)
-                    }
+            ?.let{
+                handler.add(BleRunnableType(it, operation.write, charUuid, value))
             }
 
     }
@@ -356,12 +462,8 @@ class Ble(val context: Context) {
 
         mConnections
             .find { it.uid == devUid }
-            ?.let{ curConnection ->
-                curConnection.characteristics
-                    ?.find { it.uuid.toString() == charUuid }
-                    ?.let{
-                        curConnection.gatt?.readCharacteristic(it)
-                    }
+            ?.let{
+                handler.add(BleRunnableType(it, operation.read, charUuid, null))
             }
     }
 
