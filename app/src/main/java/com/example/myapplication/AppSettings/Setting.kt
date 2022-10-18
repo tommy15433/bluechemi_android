@@ -11,6 +11,8 @@ import kotlin.math.abs
 
 object Settings{
 
+    var APP_UUID = ""
+
     open class SliderSetting(
         val min: Int,
         val max: Int,

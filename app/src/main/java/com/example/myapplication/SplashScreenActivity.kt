@@ -1,14 +1,20 @@
 package com.example.myapplication
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import androidx.appcompat.app.AlertDialog
+import com.example.myapplication.AppSettings.Settings
 import com.example.myapplication.comm.Ble
 import com.example.myapplication.weatherApi.ForecastParser
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import java.util.*
 
 class SplashScreenActivity : AppCompatActivity() {
     val TAG = "SplashScreen"
@@ -20,6 +26,21 @@ class SplashScreenActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
 
         supportActionBar?.hide()
+
+        // update application uuid only once
+        val spref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE)
+        val appUuid = spref.getString(getString(R.string.app_uuid), "")
+        if(appUuid.isNullOrEmpty()){
+            Settings.APP_UUID = UUID.randomUUID().toString()
+            with(spref.edit()){
+                putString(getString(R.string.app_uuid), Settings.APP_UUID)
+                apply()
+            }
+        }else{
+            Settings.APP_UUID = appUuid
+        }
+
+
 
         // permissions
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
@@ -55,6 +76,8 @@ class SplashScreenActivity : AppCompatActivity() {
         Locations.initInstance(applicationContext)
         Locations.instance?.startRequest()
         ForecastParser.parse(37.4791657, 127.1414918)
+
+
 
         if (!Ble.instance.isEnabled){
             AlertDialog.Builder(this)

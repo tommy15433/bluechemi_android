@@ -157,8 +157,10 @@ class MainActivity : AppCompatActivity() {
                     )
 
                     Firebase.firestore
-                        .collection(uid)
+                        .collection(Settings.APP_UUID)
                         .document(getString(R.string.db_doc_setting))
+                        .collection(uid)
+                        .document(uid)
                         .set(settingData)
                         .addOnSuccessListener {
                             Toast.makeText(this, "server updated", Toast.LENGTH_SHORT).show()
@@ -218,8 +220,10 @@ class MainActivity : AppCompatActivity() {
                     BlueChemiIntentFilters.ACTION_SCAN_DEVICE_ADDED -> {
                         val db = Firebase.firestore
                         db
-                            .collection(uid)
+                            .collection(Settings.APP_UUID)
                             .document(getString(R.string.db_doc_setting))
+                            .collection(uid)
+                            .document(uid)
                             .get()
                             .addOnSuccessListener {
                                 it.data?.let{
@@ -277,6 +281,7 @@ class MainActivity : AppCompatActivity() {
                         //runPhysicalNoti()
 
                         val noti: NotificationItem = NotificationItem(
+                            uid,
                             getCurrentDate(),
                             getCurrentTime(),
                             Locations.instance?.addressResult?.getAddressLine(0).toString(),
@@ -284,20 +289,8 @@ class MainActivity : AppCompatActivity() {
                             ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.WAVE_HEIGHT)?.getInfo()?: "없음")
 
                         notiModel.add(noti)
-
                         notiDisplay(notiModel.unreadMessageCount)
 
-                        val map = hashMapOf(
-                            ("SKY" to ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.SKY)?.getInfo()?: "없음") as Pair<Any, Any>,
-                            ("WAV" to ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.WAVE_HEIGHT)?.getInfo()?: "없음") as Pair<Any, Any>,
-                        )
-//
-//                        val db = Firebase.firestore
-//                        db.collection(uid)
-//                            .document(noti.address)
-//                            .collection(noti.date)
-//                            .document(noti.time)
-//                            .set(map)
 
                     }
                     else ->{
@@ -377,6 +370,27 @@ class MainActivity : AppCompatActivity() {
                 fragmentNoti.setListener(object : FragmentNotiListener{
                     override fun onSubmit(item: NotificationItem) {
                         diarySubjectModel.addNoti(item)
+
+                        // upload to server
+                        val map = hashMapOf(
+                            ("ID" to item.devUuid) as Pair<Any, Any>,
+                            ("SKY" to ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.SKY)?.getInfo()?: "없음") as Pair<Any, Any>,
+                            ("WAV" to ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.WAVE_HEIGHT)?.getInfo()?: "없음") as Pair<Any, Any>,
+                        )
+
+                        val db = Firebase.firestore
+                        db.collection(Settings.APP_UUID)
+                            .document(getString(R.string.db_diary))
+                            .collection(item.address)
+                            .document("${item.date}")
+                            .collection(getString(R.string.db_diary_log))
+                            .document(item.time)
+                            .set(map)
+                            .addOnSuccessListener {
+                                Toast.makeText(this@MainActivity, "diary updated", Toast.LENGTH_SHORT).show() }
+                            .addOnFailureListener {
+                                Toast.makeText(this@MainActivity, "diary update failed", Toast.LENGTH_SHORT).show() }
+
                     }
                     override fun onRemove(idx: Int) {
                         notiModel.removeAt(idx)
@@ -447,20 +461,6 @@ class MainActivity : AppCompatActivity() {
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
-    }
-
-    fun test(){
-        // todo: this is testcode.
-        ForecastParser.parse(33.40714444444444, 126.26908611111111)
-
-        val weather = ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.TEMP_LASTHOUR)?.let{
-            it.fcstValue
-        }?: "null"
-        val wave = ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.WAVE_HEIGHT)?.let {
-            it.fcstValue
-        }?: "null"
-
-        notiModel.add(NotificationItem(getCurrentDate(), getCurrentTime(), "서울", weather, wave))
     }
 
 }

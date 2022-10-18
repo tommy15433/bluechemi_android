@@ -16,6 +16,11 @@
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
+    <string name="app_uuid">com.example.myapplication.app_uuid</string>
+
+    <string name="db_diary">db_diary</string>
+    <string name="db_diary_log">db_diary_log</string>
+
     <string name="db_doc_setting">db_doc_setting</string>
     <string name="db_sensitivity">db_sense</string>
     <string name="db_brightness">db_brightness</string>

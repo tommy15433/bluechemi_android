@@ -1,6 +1,7 @@
 package com.example.myapplication.viewnotification
 
 data class NotificationItem(
+    val devUuid: String,
     val date: String,
     val time: String,
     val address: String,
