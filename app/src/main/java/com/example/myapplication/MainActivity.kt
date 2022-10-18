@@ -279,17 +279,23 @@ class MainActivity : AppCompatActivity() {
                     BlueChemiIntentFilters.ACTION_BITE_DETECTED -> {
 
                         //runPhysicalNoti()
+                        if (ElapseTimer.hasElapsed(Settings.BITE_DETECTION_INTERVAL_MAX_MS)){
 
-                        val noti: NotificationItem = NotificationItem(
-                            uid,
-                            getCurrentDate(),
-                            getCurrentTime(),
-                            Locations.instance?.addressResult?.getAddressLine(0).toString(),
-                            ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.SKY)?.getInfo()?: "없음",
-                            ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.WAVE_HEIGHT)?.getInfo()?: "없음")
+                            val noti: NotificationItem = NotificationItem(
+                                uid,
+                                getCurrentDate(),
+                                getCurrentTime(),
+                                Locations.instance?.addressResult?.getAddressLine(0).toString(),
+                                ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.SKY)?.getInfo()?: "없음",
+                                ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.WAVE_HEIGHT)?.getInfo()?: "없음")
 
-                        notiModel.add(noti)
-                        notiDisplay(notiModel.unreadMessageCount)
+                            notiModel.add(noti)
+                            notiDisplay(notiModel.unreadMessageCount)
+
+                            ElapseTimer.start()
+                        }else{
+
+                        }
 
 
                     }

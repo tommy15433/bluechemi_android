@@ -12,6 +12,7 @@ import kotlin.math.abs
 object Settings{
 
     var APP_UUID = ""
+    val BITE_DETECTION_INTERVAL_MAX_MS: Long = 2000
 
     open class SliderSetting(
         val min: Int,
