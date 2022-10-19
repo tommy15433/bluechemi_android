@@ -38,6 +38,7 @@ import com.example.myapplication.weatherApi.ForecastParser
 import com.example.myapplication.weatherApi.ForecastResponse
 import com.google.android.gms.location.LocationResult
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.lang.Exception
@@ -72,6 +73,35 @@ class MainActivity : AppCompatActivity() {
         // set initial view to FragmentA
         supportFragmentManager.beginTransaction().add(R.id.linearlayout_fragment, FragmentDevices())
             .commit()
+
+        Firebase.firestore.collection(getString(R.string.db_root))
+            .document(Settings.APP_UUID)
+            .collection(getString(R.string.db_diary))
+            .get(Source.CACHE)
+            .addOnSuccessListener {
+                it.documents.forEach {
+
+                    val date = it.data?.get(getString(R.string.db_key_diary_date))?: "unknown date"
+                    val time = it.data?.get(getString(R.string.db_key_diary_time))?: "unknown time"
+                    val id = it.data?.get(getString(R.string.db_key_diary_id))?: "unknown id"
+                    val address = it.data?.get(getString(R.string.db_key_diary_address))?: "unknown address"
+                    val sky = it.data?.get(getString(R.string.db_key_diary_sky))?: "unknown sky"
+                    val wav = it.data?.get(getString(R.string.db_key_diary_wav))?: "unknown wav"
+                    val note = it.data?.get(getString(R.string.db_key_diary_note))?: "unknown note"
+
+                    diarySubjectModel.addNoti(
+                        NotificationItem(
+                            id.toString(),
+                            date.toString(),
+                            time.toString(),
+                            address.toString(),
+                            sky.toString(),
+                            wav.toString(),
+                            note.toString()
+                        )
+                    )
+                }
+            }
 
         initBottomNavigation()
         initLocation()
@@ -155,11 +185,10 @@ class MainActivity : AppCompatActivity() {
                         getString(R.string.db_brightness) to bright,
                         getString(R.string.db_username) to name
                     )
-
-                    Firebase.firestore
-                        .collection(Settings.APP_UUID)
-                        .document(getString(R.string.db_doc_setting))
-                        .collection(uid)
+                    Settings.deviceHashMap.get(uid)?.putAll(settingData)
+                    val db =Firebase.firestore.collection(getString(R.string.db_root))
+                        .document(Settings.APP_UUID)
+                        .collection(getString(R.string.db_doc_setting))
                         .document(uid)
                         .set(settingData)
                         .addOnSuccessListener {
@@ -218,35 +247,16 @@ class MainActivity : AppCompatActivity() {
 
                 when (intent?.action){
                     BlueChemiIntentFilters.ACTION_SCAN_DEVICE_ADDED -> {
-                        val db = Firebase.firestore
-                        db
-                            .collection(Settings.APP_UUID)
-                            .document(getString(R.string.db_doc_setting))
-                            .collection(uid)
-                            .document(uid)
-                            .get()
-                            .addOnSuccessListener {
-                                it.data?.let{
-                                    try{
-                                        val brightness = (it.getOrDefault(getString(R.string.db_brightness), Settings.LedBrightness.def) as Long).toInt()
-                                        val sensitivity = (it.getOrDefault(getString(R.string.db_sensitivity), Settings.Sensitivity.def) as Long).toInt()
-                                        val name = it.getOrDefault(getString(R.string.db_username), getString(R.string.db_username_default)) as String
 
-                                        model.addNewDevice(uid, name, sensitivity, brightness)
-                                    }catch (e: Exception){
-                                        Toast.makeText(context, "failed to read settings from server: ${e.message}", Toast.LENGTH_SHORT).show()
-                                        model.addNewDevice(uid, getString(R.string.db_username_default), Settings.Sensitivity.def, Settings.LedBrightness.def)
-                                    }
-                                }?:run{
-                                    Toast.makeText(context, "no data available. setting to initial", Toast.LENGTH_SHORT).show()
-                                    model.addNewDevice(uid, getString(R.string.db_username_default), Settings.Sensitivity.def, Settings.LedBrightness.def)
-                                }
-                            }
-                            .addOnFailureListener {
-                                Toast.makeText(context, "failed to read settings from server: ${it.message}", Toast.LENGTH_SHORT).show()
-                                model.addNewDevice(uid, getString(R.string.db_username_default), Settings.Sensitivity.def, Settings.LedBrightness.def)
-                            }
-
+                        val devmap = Settings.deviceHashMap.get(uid)
+                        devmap?.let {
+                            val brightness = it.get(getString(R.string.db_brightness))
+                            val sensitivity = it.get(getString(R.string.db_sensitivity))
+                            val name = it.get(getString(R.string.db_username))
+                            model.addNewDevice(uid, name.toString(), sensitivity.toString().toInt(), brightness.toString().toInt())
+                        }?: run{
+                            model.addNewDevice(uid, getString(R.string.db_username_default), Settings.Sensitivity.def, Settings.LedBrightness.def)
+                        }
                     }
                     BlueChemiIntentFilters.ACTION_SCAN_DEVICE_REMOVED -> {
                         model.removeDevice(uid)
@@ -296,7 +306,6 @@ class MainActivity : AppCompatActivity() {
                         }else{
 
                         }
-
 
                     }
                     else ->{
@@ -379,23 +388,31 @@ class MainActivity : AppCompatActivity() {
 
                         // upload to server
                         val map = hashMapOf(
-                            ("ID" to item.devUuid) as Pair<Any, Any>,
-                            ("SKY" to ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.SKY)?.getInfo()?: "없음") as Pair<Any, Any>,
-                            ("WAV" to ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.WAVE_HEIGHT)?.getInfo()?: "없음") as Pair<Any, Any>,
+                            getString(R.string.db_key_diary_date) to item.date,
+                            getString(R.string.db_key_diary_id) to item.devUuid,
+                            getString(R.string.db_key_diary_address) to item.address,
+                            getString(R.string.db_key_diary_time) to item.time,
+                            getString(R.string.db_key_diary_sky) to item.weather,
+                            getString(R.string.db_key_diary_wav) to item.waveHeight,
+                            getString(R.string.db_key_diary_note) to item.message
+
+//                            ("ID" to item.devUuid) as Pair<Any, Any>,
+//                            ("SKY" to ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.SKY)?.getInfo()?: "없음") as Pair<Any, Any>,
+//                            ("WAV" to ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.WAVE_HEIGHT)?.getInfo()?: "없음") as Pair<Any, Any>,
                         )
 
+
                         val db = Firebase.firestore
-                        db.collection(Settings.APP_UUID)
-                            .document(getString(R.string.db_diary))
-                            .collection(item.address)
-                            .document("${item.date}")
-                            .collection(getString(R.string.db_diary_log))
-                            .document(item.time)
-                            .set(map)
+                        db.collection(getString(R.string.db_root))
+                            .document(Settings.APP_UUID)
+                            .collection(getString(R.string.db_diary))
+                            .add(map)
                             .addOnSuccessListener {
-                                Toast.makeText(this@MainActivity, "diary updated", Toast.LENGTH_SHORT).show() }
+                                Toast.makeText(this@MainActivity, "diary updated", Toast.LENGTH_SHORT).show()
+                            }
                             .addOnFailureListener {
-                                Toast.makeText(this@MainActivity, "diary update failed", Toast.LENGTH_SHORT).show() }
+                                Toast.makeText(this@MainActivity, "diary update failed", Toast.LENGTH_SHORT).show()
+                            }
 
                     }
                     override fun onRemove(idx: Int) {

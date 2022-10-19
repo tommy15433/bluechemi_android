@@ -8,10 +8,13 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import com.example.myapplication.AppSettings.Settings
 import com.example.myapplication.comm.Ble
 import com.example.myapplication.weatherApi.ForecastParser
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.*
@@ -41,6 +44,32 @@ class SplashScreenActivity : AppCompatActivity() {
         }
 
 
+        Firebase.firestore.collection(getString(R.string.db_root))
+            .document(Settings.APP_UUID)
+            .collection(getString(R.string.db_doc_setting))
+            .get(Source.CACHE)
+            .addOnSuccessListener {
+                it.documents.forEach {
+                    val brightness =
+                        it.data?.getOrDefault(getString(R.string.db_brightness), 128) ?: 128
+                    val sensitivity =
+                        it.data?.getOrDefault(getString(R.string.db_sensitivity), 128) ?: 128
+                    val name = it.data?.getOrDefault(
+                        getString(R.string.db_username),
+                        getString(R.string.db_username_default)
+                    ) ?: getString(R.string.db_username_default)
+                    val uuid = it.id
+                    Settings.deviceHashMap.put(
+                        uuid,
+                        hashMapOf(
+                            getString(R.string.db_username) to name,
+                            getString(R.string.db_brightness) to brightness,
+                            getString(R.string.db_sensitivity) to sensitivity
+                        )
+                    )
+                }
+            }
+            .addOnFailureListener {  }
 
         // permissions
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){

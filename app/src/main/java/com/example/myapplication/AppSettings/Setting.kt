@@ -14,6 +14,10 @@ object Settings{
     var APP_UUID = ""
     val BITE_DETECTION_INTERVAL_MAX_MS: Long = 2000
 
+    var deviceHashMap:HashMap<Any, HashMap<String, Any>> = hashMapOf()
+    var diaryHashMap: HashMap<Any, HashMap<String, Any>> = hashMapOf()
+
+
     open class SliderSetting(
         val min: Int,
         val max: Int,
