@@ -16,6 +16,17 @@ class NotificationViewModel : ViewModel() {
     private fun update(){
         mUnreadMessages.value = mList
     }
+    fun remove(item: NotificationItem){
+        val iter = mList.iterator()
+        while (iter.hasNext()){
+            val tmp = iter.next()
+            if (tmp.compareTo(item) == 0){
+                mList.remove(tmp)
+                update()
+                return
+            }
+        }
+    }
     fun removeAt(idx: Int){
         mList.removeAt(idx)
         update()

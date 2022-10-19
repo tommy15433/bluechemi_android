@@ -415,8 +415,8 @@ class MainActivity : AppCompatActivity() {
                             }
 
                     }
-                    override fun onRemove(idx: Int) {
-                        notiModel.removeAt(idx)
+                    override fun onRemove(item: NotificationItem) {
+                        notiModel.remove(item)
                     }
                 })
 

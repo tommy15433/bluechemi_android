@@ -43,34 +43,37 @@ class NotificationRecyclerAdapter(
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        holder.binding.notiItem = mItems[position]
-        holder.binding.edittextBiteLogItemNote.doAfterTextChanged {
-            mItems[position].message = it.toString()
-        }
-        holder.binding.edittextBiteLogItemNote.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus){
-                val imm = mParent.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(v.windowToken, 0)
-            }
-        }
+        mItems[position]?.let { item ->
 
-        holder.binding.layoutBiteLogItemOthers.setOnClickListener {
-            // todo: show alert dialog with writable note. buttons are delete, cancel, submit
+            holder.binding.notiItem = item
+            holder.binding.edittextBiteLogItemNote.doAfterTextChanged {
+                item.message = it.toString()
+            }
+            holder.binding.edittextBiteLogItemNote.setOnFocusChangeListener { v, hasFocus ->
+                if (!hasFocus){
+                    val imm = mParent.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(v.windowToken, 0)
+                }
+            }
+
+            holder.binding.layoutBiteLogItemOthers.setOnClickListener {
+                // todo: show alert dialog with writable note. buttons are delete, cancel, submit
 
                 AlertDialog
                     .Builder(holder.binding.textviewBiteLogItemTime.context)
                     .setPositiveButton("submit", DialogInterface.OnClickListener { dialog, which ->
-                        listener.onNotiSubmit(position)
+                        listener.onNotiSubmit(item)
                     })
                     .setNegativeButton("delete", DialogInterface.OnClickListener { dialog, which ->
-                        listener.onNotiDelete(position)
+                        listener.onNotiDelete(item)
                     })
                     .setNeutralButton("cancel", DialogInterface.OnClickListener { dialog, which ->
 
                     })
                     .show()
-        }
+            }
 
+        }
     }
 
     override fun getItemCount(): Int {

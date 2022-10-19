@@ -2,5 +2,5 @@ package com.example.myapplication.viewnotification
 
 interface FragmentNotiListener {
     fun onSubmit(item: NotificationItem)
-    fun onRemove(idx: Int)
+    fun onRemove(item: NotificationItem)
 }

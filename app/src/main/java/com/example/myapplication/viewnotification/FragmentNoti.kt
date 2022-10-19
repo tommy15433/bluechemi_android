@@ -41,21 +41,21 @@ class FragmentNoti : Fragment() {
 
         recycler = view.findViewById(R.id.recycler_notifications)
         recyclerAdapter = NotificationRecyclerAdapter(object : NotificationRecyclerListener{
-            override fun onNotiSubmit(idx: Int) {
+            override fun onNotiSubmit(item: NotificationItem) {
                 // todo: submit log to diary and delete
-                Log.i("fragmentnoti", recyclerAdapter.getStringAt(idx))
+                Log.i("fragmentnoti", item.toString())
 
                 mListener?.let {
-                    it.onSubmit(recyclerAdapter.getItemAt(idx))
-                    it.onRemove(idx)
+                    it.onSubmit(item)
+                    it.onRemove(item)
                 }
             }
 
-            override fun onNotiDelete(idx: Int) {
+            override fun onNotiDelete(item: NotificationItem) {
                 // todo: just delete log
-                Log.i("fragmentnoti", "delete ${idx.toString()}")
+                Log.i("fragmentnoti", "delete ${item.toString()}")
                 mListener?.let {
-                    it.onRemove(idx)
+                    it.onRemove(item)
                 }
             }
 
