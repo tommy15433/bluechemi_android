@@ -56,7 +56,7 @@
 
         <EditText
             android:id="@+id/edittext_bite_log_item_note"
-            android:text='@{notiItem.message, default="메모를 작성하시오"}'
+            android:text='@={notiItem.message, default="메모를 작성하시오"}'
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"

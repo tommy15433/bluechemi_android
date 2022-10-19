@@ -15,6 +15,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.databinding.LayoutNotiItemBinding
+import com.example.myapplication.utils.getRandomString
 
 class NotificationRecyclerAdapter(
     val listener: NotificationRecyclerListener
@@ -43,12 +44,10 @@ class NotificationRecyclerAdapter(
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
+
         mItems[position]?.let { item ->
 
             holder.binding.notiItem = item
-            holder.binding.edittextBiteLogItemNote.doAfterTextChanged {
-                item.message = it.toString()
-            }
             holder.binding.edittextBiteLogItemNote.setOnFocusChangeListener { v, hasFocus ->
                 if (!hasFocus){
                     val imm = mParent.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
