@@ -107,7 +107,7 @@ object ForecastParser {
 
                     mLastResponse = response.body()
                     mLastResponse?.response?.body?.items?.item?.forEach {
-                        Log.i("response", "${it.getInfo()}")
+                        //Log.i("response", "${it.getInfo()}")
                     }
                 }
             }
