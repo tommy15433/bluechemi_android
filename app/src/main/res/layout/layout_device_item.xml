@@ -25,8 +25,10 @@
 
             >
             <ImageView
+                android:id="@+id/imageView_battery"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="#00FFFFFF"
                 android:src="@drawable/ic_battery_full"
                 android:rotation="90"
                 android:layout_gravity="center_vertical"

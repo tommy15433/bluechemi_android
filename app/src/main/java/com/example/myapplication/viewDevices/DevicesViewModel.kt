@@ -119,6 +119,11 @@ class DevicesViewModel: ViewModel() {
     fun toggleConnection(uid: String){
         Ble.instance.toggleConnection(uid)
     }
+    fun batteryChanged(uid: String, value: Int){
+
+        mDevices.find { it.UID == uid }?.Battery = value
+        updateLiveData()
+    }
 
     fun deviceConnected(uid: String){
         mDevices.find { it.UID == uid }?.let{

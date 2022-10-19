@@ -231,7 +231,8 @@ class MainActivity : AppCompatActivity() {
             BlueChemiIntentFilters.ACTION_SENSITIVITY_CHANGED,
             BlueChemiIntentFilters.ACTION_BITE_DETECTED,
             BlueChemiIntentFilters.ACTION_PLAY,
-            BlueChemiIntentFilters.ACTION_STOP)
+            BlueChemiIntentFilters.ACTION_STOP,
+            BlueChemiIntentFilters.ACTION_BATTERY_CHANGED)
 
         val broadcastReceiver: BroadcastReceiver = object: BroadcastReceiver(){
             override fun onReceive(context: Context?, intent: Intent?) {
@@ -246,6 +247,14 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 when (intent?.action){
+                    BlueChemiIntentFilters.ACTION_BATTERY_CHANGED -> {
+                        // todo: write battery change
+                        valint?.let {
+                            Log.i(TAG, "battery level changed: ${it.toString()}")
+                            model.batteryChanged(uid, it)
+                        }
+
+                    }
                     BlueChemiIntentFilters.ACTION_SCAN_DEVICE_ADDED -> {
 
                         val devmap = Settings.deviceHashMap.get(uid)

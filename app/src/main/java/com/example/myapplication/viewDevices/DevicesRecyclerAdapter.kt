@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +23,7 @@ class DevicesRecyclerAdapter(
         val buttonPlayPause: ImageButton
         val buttonSetting: ImageButton
         val buttonLightbulb: ImageButton
+        val imageViewBattery: ImageView
 
         val layoutOptions: View
 
@@ -40,6 +42,7 @@ class DevicesRecyclerAdapter(
             buttonPlayPause = itemView.findViewById(R.id.button_device_playpause)
             buttonSetting = itemView.findViewById(R.id.button_device_setting)
             buttonLightbulb = itemView.findViewById(R.id.button_device_lightbulb)
+            imageViewBattery = itemView.findViewById(R.id.imageView_battery)
 
             layoutOptions = itemView.findViewById(R.id.layout_device_options)
         }
@@ -73,6 +76,16 @@ class DevicesRecyclerAdapter(
             holder.buttonPlayPause.setImageResource(R.drawable.ic_pause)
         }else{
             holder.buttonPlayPause.setImageResource(R.drawable.ic_play)
+        }
+
+        if (devices[position].Battery >= 75){
+            holder.imageViewBattery.setImageResource(R.drawable.ic_battery_full)
+        }else if(devices[position].Battery >= 50){
+            holder.imageViewBattery.setImageResource(R.drawable.ic_battery_2block)
+        }else if(devices[position].Battery >= 25){
+            holder.imageViewBattery.setImageResource(R.drawable.ic_battery_1block)
+        }else{
+            holder.imageViewBattery.setImageResource(R.drawable.ic_battery_min)
         }
 
         holder.layoutDevice.setOnClickListener {
