@@ -5,7 +5,7 @@
     <data>
         <variable
             name="viewmodel"
-            type="com.example.myapplication.viewDevices.DeviceSettingViewModel"/>
+            type="com.bluechemi.application.viewDevices.DeviceSettingViewModel"/>
     </data>
 
 

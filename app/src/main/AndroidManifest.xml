@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.myapplication">
+    package="com.bluechemi.application">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -23,16 +23,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity
-            android:name=".ViewDiary.DiaryLogActivity"
+            android:name="com.bluechemi.application.ViewDiary.DiaryLogActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.bluechemi.application.MainActivity"
             android:exported="false"
             android:screenOrientation="portrait" >
 
         </activity>
         <activity
-            android:name=".SplashScreenActivity"
+            android:name="com.bluechemi.application.SplashScreenActivity"
             android:exported="true"
             android:screenOrientation="portrait">
 
