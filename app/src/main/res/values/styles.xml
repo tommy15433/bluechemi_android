@@ -16,6 +16,6 @@
     <integer-array name="corner_radius">10</integer-array>
 
     <style name="Default_Font">
-        <item name="fontFamily">@font/NanumGothic</item>
+        <item name="fontFamily">@font/nanumgothic</item>
     </style>
 </resources>

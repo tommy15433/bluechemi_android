@@ -12,7 +12,7 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
-        <item name="fontFamily">@font/NanumGothic</item>
+        <item name="fontFamily">@font/nanumgothic</item>
     </style>
 
     <style name="Theme.MyApplication.NoActionBar">
