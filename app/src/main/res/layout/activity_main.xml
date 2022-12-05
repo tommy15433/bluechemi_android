@@ -11,7 +11,8 @@
         android:background="@color/ColorBlueChemi30"
         android:padding="10dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
         <TextView
             android:id="@+id/textview_address"
             android:gravity="center"
@@ -19,7 +20,13 @@
             android:textColor="@color/ColorBlueChemi"
             android:text="현재 주소 확인 불가"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:layout_weight="10"/>
+        <Button
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:text="위치"
+            android:layout_weight="1"/>
     </LinearLayout>
 
     <LinearLayout

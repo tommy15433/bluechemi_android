@@ -17,6 +17,7 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
@@ -50,6 +51,7 @@ class MainActivity : AppCompatActivity() {
     val CHANNEL_ID = "입질알림"
 
     lateinit var bottomNavigationView: BottomNavigationView
+    lateinit var textviewAddress: TextView
 
     val model by lazy {
         ViewModelProvider(this).get(DevicesViewModel::class.java)
@@ -67,6 +69,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        //
+        textviewAddress = findViewById(R.id.textview_address)
 
         // set initial view to FragmentA
         supportFragmentManager.beginTransaction().add(R.id.linearlayout_fragment, FragmentDevices())
@@ -125,6 +130,7 @@ class MainActivity : AppCompatActivity() {
                 Locations.instance?.updateAddress()
                 location.lastLocation?.let {
                     ForecastParser.parse(it.latitude, it.longitude)
+                    textviewAddress.text = Locations.instance?.addressResult?.getAddressLine(0).toString()
                 }
 
             }
