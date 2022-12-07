@@ -302,7 +302,7 @@ class MainActivity : AppCompatActivity() {
                     BlueChemiIntentFilters.ACTION_BITE_DETECTED -> {
 
                         //runPhysicalNoti()
-                        if (ElapseTimer.hasElapsed(Settings.BITE_DETECTION_INTERVAL_MAX_MS)){
+//                        if (ElapseTimer.hasElapsed(Settings.BITE_DETECTION_INTERVAL_MAX_MS)){
 
                             val noti: NotificationItem = NotificationItem(
                                 uid,
@@ -314,11 +314,11 @@ class MainActivity : AppCompatActivity() {
 
                             notiModel.add(noti)
                             notiDisplay(notiModel.unreadMessageCount)
-
-                            ElapseTimer.start()
-                        }else{
-
-                        }
+//
+//                            ElapseTimer.start()
+//                        }else{
+//
+//                        }
 
                     }
                     else ->{
