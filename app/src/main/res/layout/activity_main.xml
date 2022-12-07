@@ -22,10 +22,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="10"/>
-        <Button
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:text="위치"
+        <ImageButton
+            android:id="@+id/button_location"
+            android:padding="2dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_location"
             android:layout_weight="1"/>
     </LinearLayout>
 
