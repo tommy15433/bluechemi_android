@@ -25,6 +25,11 @@ const  val SERVICE_KEY = "yJVSmvWIqXF15xKVQwwnDzcvq8sfvAs5tR0MHaRg36vcWL0BJkO%2F
 
 object ForecastParser {
 
+    interface Listener{
+        fun onForecastUpdated(result: ForecastResponse)
+    }
+
+    private var mListener: Listener? = null
     private var retrofit: Retrofit? = null
 
     private fun unSafeOkHttpClient() : OkHttpClient.Builder {
@@ -77,6 +82,9 @@ object ForecastParser {
         get() = mLastResponse?: ForecastResponse()
 
 
+    fun setListener(listener: ForecastParser.Listener){
+        mListener = listener
+    }
 
     fun parse(lat: Double, lon: Double) {
         val postApi = client?.create(ApiService::class.java)
@@ -100,6 +108,9 @@ object ForecastParser {
             ) {
                 if (response.isSuccessful) {
 
+                    response.body()?.let {
+                        mListener?.onForecastUpdated(it)
+                    }
                     Log.i("retrofit2", "response success")
 
                     mLastResponse = response.body()

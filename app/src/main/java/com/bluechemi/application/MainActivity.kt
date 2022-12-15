@@ -1,13 +1,11 @@
 package com.bluechemi.application
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.location.Location
 import android.media.AudioManager
 import android.media.Ringtone
 import android.media.RingtoneManager
@@ -17,17 +15,20 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.forEach
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.bluechemi.application.AppSettings.Settings
 import com.bluechemi.application.BlueChemi.BlueChemiIntentFilters
 import com.bluechemi.application.ViewDiary.DiaryFragment
 import com.bluechemi.application.ViewDiary.DiarySubjectViewModel
+import com.bluechemi.application.databinding.ActivityMainBinding
 import com.bluechemi.application.viewnotification.FragmentNoti
 import com.bluechemi.application.viewnotification.FragmentNotiListener
 import com.bluechemi.application.viewnotification.NotificationItem
@@ -36,7 +37,11 @@ import com.bluechemi.application.utils.*
 import com.bluechemi.application.viewDevices.*
 import com.bluechemi.application.weatherApi.ForecastParser
 import com.bluechemi.application.weatherApi.ForecastResponse
+import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.Priority
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.ktx.firestore
@@ -47,11 +52,14 @@ class MainActivity : AppCompatActivity() {
 
     val TAG = "MainActivity"
 
+    val ACTIVITY_REQUEST_LOCATION_SERVICE = 1
+
 
     val CHANNEL_ID = "입질알림"
 
     lateinit var bottomNavigationView: BottomNavigationView
-    lateinit var textviewAddress: TextView
+
+    lateinit var binding: ActivityMainBinding
 
     val model by lazy {
         ViewModelProvider(this).get(DevicesViewModel::class.java)
@@ -70,8 +78,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //
-        textviewAddress = findViewById(R.id.textview_address)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main, null)
+        Locations.instance?.getCurrentAddress(this)
+
 
         // set initial view to FragmentA
         supportFragmentManager.beginTransaction().add(R.id.linearlayout_fragment, FragmentDevices())
@@ -108,12 +117,18 @@ class MainActivity : AppCompatActivity() {
 
         initBottomNavigation()
         initLocation()
+        initWeatherApi()
         registerBroadcast(this)
 
         notiChannelCreate()
     }
 
     private fun initLocation() {
+
+        binding.address = "위치를 업데이트 해주세요"
+        binding.sky = ""
+        binding.rainprop = ""
+        binding.waveheight = ""
 
         Tracker.setListener(object : Tracker.listener{
             override fun onTraveledFar(distance: Double) {
@@ -130,10 +145,34 @@ class MainActivity : AppCompatActivity() {
                 Locations.instance?.updateAddress()
                 location.lastLocation?.let {
                     ForecastParser.parse(it.latitude, it.longitude)
-                    textviewAddress.text = Locations.instance?.addressResult?.getAddressLine(0).toString()
+
                 }
 
             }
+
+            override fun onAddressUpdated(result: LocationsCallback) {
+                binding.address = result.address
+
+                ForecastParser.parse(result.latitude, result.longitude)
+
+            }
+        })
+    }
+
+    private fun initWeatherApi(){
+        ForecastParser.setListener(object: ForecastParser.Listener{
+            override fun onForecastUpdated(result: ForecastResponse) {
+
+                Log.i(TAG, "날씨 parse ")
+
+                val sky = result.parseCategory(ForecastResponse.CATEGORY.SKY)?.getInfo()?: "없음"
+                val wave = result.parseCategory(ForecastResponse.CATEGORY.WAVE_HEIGHT)?.getInfo()?: "없음"
+                val rainprop = result.parseCategory(ForecastResponse.CATEGORY.RAIN_PROC)?.getInfo()?: "없음"
+                binding.sky = "${sky}"
+                binding.waveheight = wave
+                binding.rainprop = rainprop
+            }
+
         })
     }
 
@@ -147,6 +186,7 @@ class MainActivity : AppCompatActivity() {
             return@setOnItemSelectedListener true
         }
     }
+
 
     fun showDeviceSetting(dev: DevicesRecyclerItem) {
 
@@ -308,9 +348,10 @@ class MainActivity : AppCompatActivity() {
                                 uid,
                                 getCurrentDate(),
                                 getCurrentTime(),
-                                Locations.instance?.addressResult?.getAddressLine(0).toString(),
-                                ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.SKY)?.getInfo()?: "없음",
-                                ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.WAVE_HEIGHT)?.getInfo()?: "없음")
+                                binding.address?:"없음",
+                                binding.sky?:"없음",
+                                binding.waveheight?:"없음"
+                            )
 
                             notiModel.add(noti)
                             notiDisplay(notiModel.unreadMessageCount)
@@ -499,4 +540,49 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun getCurrentAddress(v: View){
+
+        Log.i(TAG, "getCurrentAddress")
+
+        val request: com.google.android.gms.location.LocationRequest = com.google.android.gms.location.LocationRequest.create()
+            .setInterval(Locations.INTERVAL)
+            .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+            .setFastestInterval(Locations.FASTESTINTERVAL)
+            .setWaitForAccurateLocation(true)
+
+
+        val build = LocationSettingsRequest.Builder().addLocationRequest(request)
+
+        LocationServices
+            .getSettingsClient(this)
+            .checkLocationSettings(build.build())
+            .addOnSuccessListener {
+                Log.i(TAG, "location check success")
+                Locations.instance?.getCurrentAddress(this)
+            }
+            .addOnFailureListener {
+                Log.i(TAG, "location check failed")
+                try{
+                    val resolvableApiException = it as ResolvableApiException
+                    resolvableApiException.startResolutionForResult(this, ACTIVITY_REQUEST_LOCATION_SERVICE)
+                }catch (e: Exception){
+                    Log.i(TAG, e.message.toString())
+                    Toast.makeText(this, e.message.toString(), Toast.LENGTH_SHORT).show()
+                }
+
+            }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when(requestCode){
+            ACTIVITY_REQUEST_LOCATION_SERVICE -> {
+                if (resultCode == Activity.RESULT_OK){
+                    Locations.instance?.getCurrentAddress(this)
+                }else{
+                    Toast.makeText(this, "location update request denied", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 }

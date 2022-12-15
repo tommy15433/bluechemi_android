@@ -128,33 +128,34 @@ fun toCatagort(category: String): String{
     }
 }
 fun toPTY(fcstValue: String): String{
-    val mtag = "convertPTY"
     when(fcstValue){
-        "0" -> return "없음(${mtag})"
-        "1" -> return "비(${mtag})"
-        "2" -> return "비/눈(${mtag})"
-        "3" -> return "눈(${mtag})"
-        "4" -> return "소나기(${mtag})"
+        "0" -> return "없음"
+        "1" -> return "비"
+        "2" -> return "비/눈"
+        "3" -> return "눈"
+        "4" -> return "소나기"
         else -> return fcstValue
     }
 }
 
 fun toSKY(fcstValue: String): String{
-    val mtag = "convertSKY"
     when(fcstValue){
-        "1" -> return "맑음(${mtag})"
-        "3" -> return "구름많음(${mtag})"
-        "4" -> return "흐림(${mtag})"
+        "1" -> return "맑음"
+        "3" -> return "구름많음"
+        "4" -> return "흐림"
         else -> return fcstValue
     }
 }
 
 fun toPCP(fcstValue: String): String{
-    val mtag = "convertSKY"
     when(fcstValue){
-        "1" -> return "맑음(${mtag})"
-        "3" -> return "구름많음(${mtag})"
-        "4" -> return "흐림(${mtag})"
+        "1" -> return "맑음"
+        "3" -> return "구름많음"
+        "4" -> return "흐림"
         else -> return fcstValue
     }
+}
+
+class ForecaseResult{
+
 }

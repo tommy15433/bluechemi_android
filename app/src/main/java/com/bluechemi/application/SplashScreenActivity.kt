@@ -100,7 +100,7 @@ class SplashScreenActivity : AppCompatActivity() {
 
         Ble.initInstance(applicationContext)
         Locations.initInstance(applicationContext)
-        Locations.instance?.startRequest()
+        //Locations.instance?.startRequest()
         ForecastParser.parse(37.4791657, 127.1414918)
 
 

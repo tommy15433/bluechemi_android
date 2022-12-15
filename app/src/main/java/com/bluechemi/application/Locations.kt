@@ -7,14 +7,19 @@ import android.location.Address
 import android.location.Geocoder
 import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
+import com.google.android.gms.tasks.CancellationToken
+import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.gms.tasks.OnTokenCanceledListener
 import java.lang.Exception
 
 class Locations(val context: Context) {
 
     interface Listener {
         fun onLocationUpdated(location: LocationResult)
+        fun onAddressUpdated(result: LocationsCallback)
     }
 
     var mListener: Listener? = null
@@ -30,6 +35,9 @@ class Locations(val context: Context) {
         var interval: Long = 10000
         var fastestInterval: Long = 5000
 
+        val INTERVAL: Long = 10000
+        val FASTESTINTERVAL: Long = 5000
+        val PRIORITY: Int = Priority.PRIORITY_HIGH_ACCURACY
 
         fun initInstance(context: Context){
             mInstance = Locations(context)
@@ -52,7 +60,6 @@ class Locations(val context: Context) {
             mLocationResult?.also {
                 mListener?.onLocationUpdated(it)
             }
-
         }
     }
 
@@ -119,5 +126,45 @@ class Locations(val context: Context) {
                 }
             }
         }.start()
+    }
+
+    fun getCurrentAddress(context: Context){
+        fusedLocations.getCurrentLocation(PRIORITY, object : CancellationToken(){
+            override fun onCanceledRequested(p0: OnTokenCanceledListener): CancellationToken {
+                // cancel
+                return CancellationTokenSource().token
+            }
+
+            override fun isCancellationRequested(): Boolean {
+                // canceled
+                return false
+            }
+        })
+            .addOnSuccessListener {
+                Log.i("Locations", "on get current location success")
+                object : Thread(){
+                    override fun run() {
+                        val geocoder: Geocoder = Geocoder(context)
+                        val addresses = geocoder.getFromLocation(it.latitude, it.longitude, 10)
+
+                        Log.i("GPS","lat:${it.latitude} lon:${it.longitude}")
+                        addresses.forEach {
+                            Log.i("Addresses", it.getAddressLine(0).toString())
+                        }
+                        addresses.get(0)?.let{ addr ->
+                        mListener?.onAddressUpdated(LocationsCallback(
+                            addr.getAddressLine(0).toString(),
+                            it.latitude,
+                            it.longitude
+                            ))
+                        }
+                    }
+                }.start()
+            }
+            .addOnFailureListener {
+                Log.i("Locations", "on get current location failed")
+                Toast.makeText(context, "failed to request location", Toast.LENGTH_SHORT).show()
+            }
+
     }
 }
