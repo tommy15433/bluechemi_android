@@ -11,7 +11,7 @@ class ForecastResponse {
     enum class CATEGORY{
         RAIN_PROC { override fun toString(): String = "POP" },
         RAIN_TYPE { override fun toString(): String = "PTY" },
-        RAIN_PERHOUR { override fun toString(): String = "PTY" },
+        RAIN_PERHOUR { override fun toString(): String = "PCP" },
         HUMIDITY { override fun toString(): String = "REH" },
         SNOW_PERHOUR { override fun toString(): String = "SNO" },
         SKY { override fun toString(): String = "SKY" },
