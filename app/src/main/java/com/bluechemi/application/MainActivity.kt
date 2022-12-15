@@ -168,9 +168,16 @@ class MainActivity : AppCompatActivity() {
                 val sky = result.parseCategory(ForecastResponse.CATEGORY.SKY)?.getInfo()?: "없음"
                 val wave = result.parseCategory(ForecastResponse.CATEGORY.WAVE_HEIGHT)?.getInfo()?: "없음"
                 val rainprop = result.parseCategory(ForecastResponse.CATEGORY.RAIN_PROC)?.getInfo()?: "없음"
-                binding.sky = "${sky}"
+                val temperature = result.parseCategory(ForecastResponse.CATEGORY.TEMP_LASTHOUR)?.getInfo()?: "없음"
+                val rainfall = result.parseCategory(ForecastResponse.CATEGORY.RAIN_PERHOUR)?.getInfo()?: "없음"
+                val snowfall = result.parseCategory(ForecastResponse.CATEGORY.SNOW_PERHOUR)?.getInfo()?: "없음"
+
+                binding.sky = sky
                 binding.waveheight = wave
                 binding.rainprop = rainprop
+                binding.temperature = temperature
+                binding.rainFall = rainfall
+                binding.snowFall = snowfall
             }
 
         })

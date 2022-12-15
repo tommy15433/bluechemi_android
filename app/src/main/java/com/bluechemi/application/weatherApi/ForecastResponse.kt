@@ -89,17 +89,17 @@ class Item{
 
         when (category){
             "POP",
-            "REH" -> value = "${fcstValue} [%]"
+            "REH" -> value = "${fcstValue}%"
             "PTY" -> value = toPTY(fcstValue)
             "SKY" -> value = toSKY(fcstValue)
             "TMP",
             "TMN",
-            "TMX" -> value = fcstValue + " ['c]"
+            "TMX" -> value = fcstValue + "°C"
             "UUU",
             "VVV",
             "WSD" -> value = fcstValue + " [m/s]"
             "VEC" -> value = fcstValue + " [deg]"
-            "WAV" -> value = fcstValue + " [M]"
+            "WAV" -> value = fcstValue + "M"
             "PCP",
             "SNO" -> value = fcstValue
         }
@@ -112,11 +112,11 @@ fun toCatagort(category: String): String{
     when (category){
         "POP" -> return "강수확률"
         "PTY" -> return "강수형태"
-        "PCP" -> return "1시간 강수량"
+        "PCP" -> return "비"       // 1시간 강수량
         "REH" -> return "습도"
-        "SNO" -> return "1시간 신적설"
-        "SKY" -> return "하늘상태"
-        "TMP" -> return "1시간 기온"
+        "SNO" -> return "눈"         // 1시간 신적설
+        "SKY" -> return ""          // 하늘상태2
+        "TMP" -> return "기온"    // 1시간 기온
         "TMN" -> return "일 최저기온"
         "TMX" -> return "일 최고기온"
         "UUU" -> return "풍속(동서성분)"
