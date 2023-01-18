@@ -356,7 +356,7 @@ class MainActivity : AppCompatActivity() {
                                 getCurrentDate(),
                                 getCurrentTime(),
                                 binding.address?:"없음",
-                                binding.sky?:"없음",
+                                "${binding.sky} ${binding.temperature} ${binding.snowFall} ${binding.rainFall}",
                                 binding.waveheight?:"없음"
                             )
 

@@ -12,7 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="3">
+        android:weightSum="3"
+        android:layout_margin="5dp">
 
         <TextView
             android:id="@+id/textview_diary_log_time"
@@ -39,12 +40,14 @@
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp">
         <TextView
             android:id="@+id/textview_diary_log_memo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Memo"/>
+            android:text="Memo"
+            android:textAlignment="center"/>
     </LinearLayout>
 
 </LinearLayout>
