@@ -11,9 +11,8 @@ import androidx.core.app.ActivityCompat
 import com.bluechemi.application.BlueChemi.BlueChemiIntentFilters
 import com.bluechemi.application.BlueChemi.BlueChemiParameters
 import com.bluechemi.application.utils.*
-import java.lang.Exception
 import java.util.*
-import kotlin.collections.ArrayList
+
 
 // Access with Ble.instance after initailize
 // Creating new class object may cause memory leak
@@ -119,6 +118,31 @@ class Ble(val context: Context) {
                                             }catch (e: Exception){
                                                 Log.i("BLE", "error ${e.message}")
                                             }
+
+                                        }
+                                    }else{
+
+                                    }
+                                }
+                                operation.notification -> {
+                                    instance._isTxBusy = true
+
+                                    val char = it.char
+                                    val data = it.data
+                                    if (char != null && data != null){
+                                        it.dev.characteristics.find { chars ->
+                                            val cur = chars.uuid.toString()
+                                            cur == char
+                                        }?.let { found ->
+                                            // CCCD value set
+                                            val CCCD_ID = UUID.fromString("000002902-0000-1000-8000-00805f9b34fb");
+                                            val desc = found.getDescriptor(CCCD_ID)
+                                            desc.setValue(if (data > 0) BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE else BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE)
+                                            Log.i("BLE", "descriptor $desc")
+
+                                            it.dev.gatt?.setCharacteristicNotification(found, (data > 0))
+                                            it.dev.gatt?.writeDescriptor(desc)
+
 
                                         }
                                     }else{
@@ -302,6 +326,11 @@ class Ble(val context: Context) {
                         characteristic.properties and BluetoothGattCharacteristic.PROPERTY_INDICATE > 0){
 
                         gatt?.setCharacteristicNotification(characteristic, true)
+                        val CCCD_ID = UUID.fromString("000002902-0000-1000-8000-00805f9b34fb");
+                        val desc = characteristic.getDescriptor(CCCD_ID)
+                        desc.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+                        Log.i(TAG, "descriptor $desc")
+                        gatt?.writeDescriptor(desc)
                     }
                 }
             }
@@ -318,6 +347,14 @@ class Ble(val context: Context) {
             super.onServiceChanged(gatt)
         }
 
+        override fun onDescriptorWrite(
+            gatt: BluetoothGatt?,
+            descriptor: BluetoothGattDescriptor?,
+            status: Int
+        ) {
+            super.onDescriptorWrite(gatt, descriptor, status)
+            clearFlags()
+        }
         override fun onCharacteristicChanged(
             gatt: BluetoothGatt?,
             characteristic: BluetoothGattCharacteristic?
@@ -332,6 +369,7 @@ class Ble(val context: Context) {
             Log.i(TAG, "onCharacteristicChanged: ${action}, value: ${value.toString()}")
 
             sendBroadcast(action, mac, value)
+            clearFlags()
         }
 
         override fun onCharacteristicRead(
@@ -426,7 +464,7 @@ class Ble(val context: Context) {
     }
     fun disconnect(mac: String){
         mConnections.find { it.uid == mac }?.let { bleDev ->
-            handler.add(BleRunnableType(bleDev, operation.disconnect, null, null))
+             handler.add(BleRunnableType(bleDev, operation.disconnect, null, null))
         }
     }
     @SuppressLint("MissingPermission")
@@ -435,6 +473,8 @@ class Ble(val context: Context) {
             if (bleDev.status == BleDevice.Status.connected){
 
                 Log.i("Ble", "disconnect called")
+                // for bluechemi v02
+                write(mac, BlueChemiParameters.CUSTOM_CUSTOM_UUID, 1)
                 disconnect(mac)
             }else if (bleDev.status == BleDevice.Status.disconnected){
                 Log.i("Ble", "connect called")
@@ -470,4 +510,13 @@ class Ble(val context: Context) {
             }
     }
 
+    fun enableNotification(devUid: String, charUuid: String, flag: Boolean){
+        Log.i("Ble enable notification", "$devUid\t$charUuid\t${flag.toString()}" )
+
+        mConnections
+            .find { it.uid == devUid }
+            ?.let{
+                handler.add(BleRunnableType(it, operation.notification, charUuid, if (flag) 1 else 0))
+            }
+    }
 }
