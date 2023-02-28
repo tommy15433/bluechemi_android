@@ -28,5 +28,5 @@ class BleDevice {
 }
 
 enum class operation {
-    connect, disconnect, read, write
+    connect, disconnect, read, write, notification
 }

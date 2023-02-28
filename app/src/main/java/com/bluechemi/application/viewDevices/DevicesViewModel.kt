@@ -107,9 +107,15 @@ class DevicesViewModel: ViewModel() {
     fun togglePlay(uid: String){
         if (mDevices.find { it.UID == uid }?.State == DevicesStateEnum.PLAYING){
             Ble.instance.write(uid, BlueChemiParameters.CUSTOM_STOP_UUID, 1)
+            Ble.instance.enableNotification(uid, BlueChemiParameters.CUSTOM_BAT_UUID, false);
+            Ble.instance.enableNotification(uid, BlueChemiParameters.CUSTOM_BITE_UUID, false);
+
 
         }else{
             Ble.instance.write(uid, BlueChemiParameters.CUSTOM_START_UUID, 1)
+            Ble.instance.enableNotification(uid, BlueChemiParameters.CUSTOM_BAT_UUID, true);
+            Ble.instance.enableNotification(uid, BlueChemiParameters.CUSTOM_BITE_UUID, true);
+
         }
     }
     fun devicePing(uid: String){
@@ -128,6 +134,8 @@ class DevicesViewModel: ViewModel() {
         mDevices.find { it.UID == uid }?.let{
             it.Connection = Connection.CONNECTED
 
+            // for bluechemi v02 connect disconnect error
+            Ble.instance.write(uid, BlueChemiParameters.CUSTOM_CUSTOM_UUID, 0);
             Ble.instance.write(uid, BlueChemiParameters.CUSTOM_SENSE_UUID, it.Sensitivity)
             Ble.instance.write(uid, BlueChemiParameters.CUSTOM_LED_UUID, it.Brightness)
 
