@@ -326,11 +326,6 @@ class Ble(val context: Context) {
                         characteristic.properties and BluetoothGattCharacteristic.PROPERTY_INDICATE > 0){
 
                         gatt?.setCharacteristicNotification(characteristic, true)
-                        val CCCD_ID = UUID.fromString("000002902-0000-1000-8000-00805f9b34fb");
-                        val desc = characteristic.getDescriptor(CCCD_ID)
-                        desc.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
-                        Log.i(TAG, "descriptor $desc")
-                        gatt?.writeDescriptor(desc)
                     }
                 }
             }

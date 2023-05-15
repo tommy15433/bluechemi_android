@@ -77,20 +77,10 @@ class SplashScreenActivity : AppCompatActivity() {
                         android.Manifest.permission.BLUETOOTH,
                         android.Manifest.permission.BLUETOOTH_CONNECT,
                         android.Manifest.permission.BLUETOOTH_SCAN,
-                        android.Manifest.permission.BLUETOOTH_ADVERTISE,
-                        android.Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                        android.Manifest.permission.BLUETOOTH_ADVERTISE),
                     2
                 )
-            }else if (Build.VERSION.SDK_INT >= 29){
-                requestPermissions(
-                    arrayOf(
-                        android.Manifest.permission.ACCESS_FINE_LOCATION,
-                        android.Manifest.permission.BLUETOOTH,
-                        android.Manifest.permission.ACCESS_BACKGROUND_LOCATION),
-                    2
-                )
-            }
-            else {
+            }else{
                 requestPermissions(
                     arrayOf(
                         android.Manifest.permission.ACCESS_FINE_LOCATION,
