@@ -121,6 +121,17 @@ class MainActivity : AppCompatActivity() {
                     val wav = it.data?.get(getString(R.string.db_key_diary_wav))?: "unknown wav"
                     val note = it.data?.get(getString(R.string.db_key_diary_note))?: "unknown note"
 
+                    diarySubjectModel.addNoti(
+                        NotificationItem(
+                            Settings.APP_UUID,
+                            date.toString(),
+                            time.toString(),
+                            address.toString(),
+                            sky.toString(),
+                            wav.toString(),
+                            note.toString()
+                        )
+                    )
                 }
             }
 
