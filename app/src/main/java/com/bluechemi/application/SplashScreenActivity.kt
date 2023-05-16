@@ -30,15 +30,16 @@ class SplashScreenActivity : AppCompatActivity() {
         // update application uuid only once
         val spref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE)
         val appUuid = spref.getString(getString(R.string.app_uuid), "")
-        if(appUuid.isNullOrEmpty()){
-            Settings.APP_UUID = UUID.randomUUID().toString()
-            with(spref.edit()){
-                putString(getString(R.string.app_uuid), Settings.APP_UUID)
-                apply()
-            }
-        }else{
-            Settings.APP_UUID = appUuid
-        }
+//        if(appUuid.isNullOrEmpty()){
+//            Settings.APP_UUID = UUID.randomUUID().toString()
+//            with(spref.edit()){
+//                putString(getString(R.string.app_uuid), Settings.APP_UUID)
+//                apply()
+//            }
+//        }else{
+//            Settings.APP_UUID = appUuid
+//        }
+        Settings.APP_UUID = "Testing"
 
 
         Firebase.firestore.collection(getString(R.string.db_root))

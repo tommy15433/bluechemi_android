@@ -1,11 +1,13 @@
 package com.bluechemi.application
 
+import android.Manifest
 import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.location.Location
+import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.media.Ringtone
 import android.media.RingtoneManager
@@ -34,6 +36,8 @@ import com.bluechemi.application.viewnotification.FragmentNotiListener
 import com.bluechemi.application.viewnotification.NotificationItem
 import com.bluechemi.application.viewnotification.NotificationViewModel
 import com.bluechemi.application.utils.*
+import com.bluechemi.application.viewCamera.FragmentCamera
+import com.bluechemi.application.viewCamera.FragmentCameraListener
 import com.bluechemi.application.viewDevices.*
 import com.bluechemi.application.weatherApi.ForecastParser
 import com.bluechemi.application.weatherApi.ForecastResponse
@@ -46,6 +50,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.io.InputStream
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -54,7 +59,22 @@ class MainActivity : AppCompatActivity() {
 
     val ACTIVITY_REQUEST_LOCATION_SERVICE = 1
 
+    companion object{
+        val ACTIVITY_REQUEST_LOCATION_SERVICE = 1
+        val ACTIVITY_REQUEST_CAMERA = 10
+        val ACTIVITY_REQUEST_CAMERA_PERMISSIONS = mutableListOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO
+        ).apply {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P){
+                add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            }
+        }.toTypedArray()
 
+        val BACK_ID_FRAG_CAMERA = "BACK_FROM_CAMERA"
+        val BACK_ID_FRAG_SETTING = "BACK_FROM_SETTING"
+
+    }
     val CHANNEL_ID = "입질알림"
 
     lateinit var bottomNavigationView: BottomNavigationView
@@ -101,17 +121,6 @@ class MainActivity : AppCompatActivity() {
                     val wav = it.data?.get(getString(R.string.db_key_diary_wav))?: "unknown wav"
                     val note = it.data?.get(getString(R.string.db_key_diary_note))?: "unknown note"
 
-                    diarySubjectModel.addNoti(
-                        NotificationItem(
-                            id.toString(),
-                            date.toString(),
-                            time.toString(),
-                            address.toString(),
-                            sky.toString(),
-                            wav.toString(),
-                            note.toString()
-                        )
-                    )
                 }
             }
 
@@ -121,6 +130,21 @@ class MainActivity : AppCompatActivity() {
         registerBroadcast(this)
 
         notiChannelCreate()
+
+        // testing attention please
+        notiModel.add(
+            NotificationItem(
+            "uuid",
+            "date",
+            "time",
+            "address",
+            "weather",
+            "waveheight",
+            "message",
+                resources.getDrawable(R.drawable.ic_empty_camera_svg)
+
+        )
+        )
     }
 
     private fun initLocation() {
@@ -221,6 +245,21 @@ class MainActivity : AppCompatActivity() {
         if (supportFragmentManager.backStackEntryCount > 0) {
             bottomNavigationView.menu.forEach {
                 it.isEnabled = true
+
+            }
+            when(supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 1).name)
+            {
+                "preFragDev" -> {
+
+                }
+                BACK_ID_FRAG_CAMERA -> {
+
+                    supportFragmentManager.popBackStack()
+
+                }
+                BACK_ID_FRAG_SETTING -> {
+
+                }
 
             }
             // LIFO
@@ -357,7 +396,9 @@ class MainActivity : AppCompatActivity() {
                                 getCurrentTime(),
                                 binding.address?:"없음",
                                 "${binding.sky} ${binding.temperature} ${binding.snowFall} ${binding.rainFall}",
-                                binding.waveheight?:"없음"
+                                binding.waveheight?:"없음",
+                                "메모를 작성하세요",
+                                resources.getDrawable(R.drawable.ic_empty_camera_svg)
                             )
 
                             notiModel.add(noti)
@@ -479,6 +520,11 @@ class MainActivity : AppCompatActivity() {
                     override fun onRemove(item: NotificationItem) {
                         notiModel.remove(item)
                     }
+
+                    override fun onStartCapture(item: NotificationItem) {
+                        notiModel.setCaptureItem(item)
+                        startCameraFragment()
+                    }
                 })
 
                 supportFragmentManager.beginTransaction()
@@ -501,6 +547,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun startCameraFragment() {
+        bottomNavigationView.menu.forEach {
+            it.isEnabled = false
+        }
+
+        val camfrag = FragmentCamera().apply {
+            setListener(object : FragmentCameraListener{
+                override fun onCapture(uri: Uri) {
+                    val inputStream = contentResolver.openInputStream(uri)
+                    val drawable = Drawable.createFromStream(inputStream, uri.toString())
+                    notiModel.setCapturedUri(drawable)
+                    onBackPressed()
+                }
+            })
+        }
+
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.linearlayout_fragment, camfrag)
+            .addToBackStack(BACK_ID_FRAG_CAMERA)
+            .commitAllowingStateLoss()
+    }
 
 
     fun notiDisplay(msgCount: Int){
