@@ -47,6 +47,9 @@ class NotificationRecyclerAdapter(
                     imm.hideSoftInputFromWindow(v.windowToken, 0)
                 }
             }
+            holder.binding.buttonCamera.setOnClickListener {
+                listener?.onScreenCapture(item)
+            }
 
             holder.binding.layoutBiteLogItemOthers.setOnClickListener {
                 // todo: show alert dialog with writable note. buttons are delete, cancel, submit

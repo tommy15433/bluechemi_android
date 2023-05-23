@@ -8,9 +8,11 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.bluechemi.application.databinding.FragmentSettingBinding
+import com.bluechemi.application.utils.copyTextToClipboard
 
 
 class SettingFragment : Fragment() {
@@ -52,5 +54,12 @@ class SettingFragment : Fragment() {
             context!!.startActivity(intent)
 
         }
+
+        binding.buttonCopyAppid.setOnClickListener {
+            copyTextToClipboard(binding.root.context, com.bluechemi.application.AppSettings.Settings.APP_UUID)
+            Toast.makeText(binding.root.context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
+        }
+
+        binding.textviewAppid.text = com.bluechemi.application.AppSettings.Settings.APP_UUID
     }
 }

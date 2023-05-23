@@ -10,6 +10,7 @@ import android.os.Handler
 import androidx.appcompat.app.AlertDialog
 import com.bluechemi.application.AppSettings.Settings
 import com.bluechemi.application.comm.Ble
+import com.bluechemi.application.firebase.Db
 import com.bluechemi.application.weatherApi.ForecastParser
 import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.ktx.firestore
@@ -39,34 +40,23 @@ class SplashScreenActivity : AppCompatActivity() {
         }else{
             Settings.APP_UUID = appUuid
         }
+//        Settings.APP_UUID = "Testing"
 
-
-        Firebase.firestore.collection(getString(R.string.db_root))
-            .document(Settings.APP_UUID)
-            .collection(getString(R.string.db_doc_setting))
-            .get(Source.CACHE)
+        Db.ParseDiariesCache(this, Settings.APP_UUID)
             .addOnSuccessListener {
-                it.documents.forEach {
-                    val brightness =
-                        it.data?.getOrDefault(getString(R.string.db_brightness), 128) ?: 128
-                    val sensitivity =
-                        it.data?.getOrDefault(getString(R.string.db_sensitivity), 128) ?: 128
-                    val name = it.data?.getOrDefault(
-                        getString(R.string.db_username),
-                        getString(R.string.db_username_default)
-                    ) ?: getString(R.string.db_username_default)
-                    val uuid = it.id
-                    Settings.deviceHashMap.put(
-                        uuid,
-                        hashMapOf(
-                            getString(R.string.db_username) to name,
-                            getString(R.string.db_brightness) to brightness,
-                            getString(R.string.db_sensitivity) to sensitivity
-                        )
-                    )
-                }
+
+            }.addOnFailureListener {
+
             }
-            .addOnFailureListener {  }
+
+        Db.ParseDeviceSettingsCache(this, Settings.APP_UUID)
+            .addOnSuccessListener {
+                val map = Db.QueryDeviceSettings(this, it)
+                Settings.deviceHashMap.putAll(map)
+            }
+            .addOnFailureListener {
+
+            }
 
         // permissions
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
@@ -108,7 +98,7 @@ class SplashScreenActivity : AppCompatActivity() {
         if (!Ble.instance.isEnabled){
             AlertDialog.Builder(this)
                 .setTitle("Need Bluetooth")
-                .setMessage("Enable Blutoooth")
+                .setMessage("Enable Blutooth")
                 .setPositiveButton("exit"){_, _ ->
                     finish()
                 }.show()

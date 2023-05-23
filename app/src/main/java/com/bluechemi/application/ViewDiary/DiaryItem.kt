@@ -1,5 +1,8 @@
 package com.bluechemi.application.ViewDiary
 
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import java.io.Serializable
 
 class DiaryItem(
@@ -41,5 +44,6 @@ class DiaryLog(
     val time: String,
     val weather: String,
     val waveheight: String,
-    val message: String
+    val message: String,
+    val imagePath: String?
 ) : Serializable{}

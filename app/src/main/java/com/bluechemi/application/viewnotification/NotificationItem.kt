@@ -1,6 +1,10 @@
 package com.bluechemi.application.viewnotification
 
+import android.graphics.drawable.Drawable
+import android.net.Uri
+import androidx.databinding.ObservableField
 import com.bluechemi.application.utils.getRandomString
+import java.util.*
 
 data class NotificationItem (
     val devUuid: String,
@@ -9,7 +13,10 @@ data class NotificationItem (
     val address: String,
     val weather: String,
     val waveHeight: String,
-    var message: String = "blank")
+    var message: String = "blank",
+    var drawable: Drawable? = null,
+    var storagePath: String? = null
+)
         :Comparable<NotificationItem>{
 
     override fun toString(): String {
@@ -25,7 +32,7 @@ data class NotificationItem (
                 getRandomString(10),
                 getRandomString(10),
                 getRandomString(10),
-                getRandomString(10),
+                getRandomString(10)
             )
         }
     }

@@ -1,14 +1,17 @@
 package com.bluechemi.application.viewnotification
 
+import android.Manifest
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
+import com.bluechemi.application.MainActivity
 import com.bluechemi.application.R
 //import com.example.myapplication.databinding.LayoutNotiItemBinding
 
@@ -20,6 +23,21 @@ class FragmentNoti : Fragment() {
 
     lateinit var recycler: RecyclerView
     lateinit var recyclerAdapter: NotificationRecyclerAdapter
+
+    var curitem: NotificationItem = NotificationItem("","","","","","","")
+
+    var activityResultLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()){ result ->
+        var granted = true
+        for (b in result.values){
+            granted = granted && b
+        }
+        if (granted){
+            displayCamera()
+        }else{
+
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +77,11 @@ class FragmentNoti : Fragment() {
                 }
             }
 
+            override fun onScreenCapture(item: NotificationItem) {
+                curitem = item
+                activityResultLauncher.launch(MainActivity.ACTIVITY_REQUEST_CAMERA_PERMISSIONS)
+            }
+
         })
         recycler.adapter = recyclerAdapter
 
@@ -70,5 +93,9 @@ class FragmentNoti : Fragment() {
 
     fun setListener(listener: FragmentNotiListener){
         mListener = listener
+    }
+
+    fun displayCamera(){
+        mListener?.onStartCapture(curitem)
     }
 }

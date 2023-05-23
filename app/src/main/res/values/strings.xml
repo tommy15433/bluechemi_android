@@ -30,6 +30,7 @@
     <string name="db_key_diary_sky">db_key_diary_sky</string>
     <string name="db_key_diary_wav">db_key_diary_wav</string>
     <string name="db_key_diary_note">db_key_diary_note</string>
+    <string name="db_key_image_path">db_key_image_path</string>
 
     <string name="db_doc_setting">db_doc_setting</string>
     <string name="db_sensitivity">db_sense</string>

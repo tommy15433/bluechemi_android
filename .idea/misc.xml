@@ -52,14 +52,17 @@
         <entry key="..\:/0_WorkFolder/test/bluechemi/app/src/main/res/menu/my_navigation_items.xml" value="0.29375" />
         <entry key="..\:/0_WorkFolder/test/bluechemi/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.2" />
         <entry key="..\:/0_WorkFolder/test/bluechemi/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.224" />
-        <entry key="..\:/test/petiot_demo/app/src/main/res/layout/activity_diary_log.xml" value="0.26145833333333335" />
+        <entry key="..\:/test/petiot_demo/app/src/main/res/drawable/ic_addbutton.xml" value="0.3165" />
+        <entry key="..\:/test/petiot_demo/app/src/main/res/drawable/ic_bulb_light_icon.xml" value="0.3165" />
+        <entry key="..\:/test/petiot_demo/app/src/main/res/drawable/ic_camera_click_vec2.xml" value="0.3165" />
         <entry key="..\:/test/petiot_demo/app/src/main/res/layout/activity_main.xml" value="0.2884963768115942" />
-        <entry key="..\:/test/petiot_demo/app/src/main/res/layout/activity_splash.xml" value="0.26145833333333335" />
-        <entry key="..\:/test/petiot_demo/app/src/main/res/layout/activity_splash_test.xml" value="0.26145833333333335" />
-        <entry key="..\:/test/petiot_demo/app/src/main/res/layout/fragment_camera.xml" value="0.26145833333333335" />
         <entry key="..\:/test/petiot_demo/app/src/main/res/layout/fragment_device_setting.xml" value="0.31145833333333334" />
-        <entry key="..\:/test/petiot_demo/app/src/main/res/layout/fragment_devices.xml" value="0.26145833333333335" />
-        <entry key="..\:/test/petiot_demo/app/src/main/res/layout/layout_noti_item.xml" value="0.25" />
+        <entry key="..\:/test/petiot_demo/app/src/main/res/layout/fragment_diary.xml" value="0.28229166666666666" />
+        <entry key="..\:/test/petiot_demo/app/src/main/res/layout/fragment_noti.xml" value="0.28229166666666666" />
+        <entry key="..\:/test/petiot_demo/app/src/main/res/layout/fragment_setting.xml" value="0.3203125" />
+        <entry key="..\:/test/petiot_demo/app/src/main/res/layout/layout_diary_log_item.xml" value="0.28229166666666666" />
+        <entry key="..\:/test/petiot_demo/app/src/main/res/layout/layout_diary_subject_item.xml" value="0.28229166666666666" />
+        <entry key="..\:/test/petiot_demo/app/src/main/res/layout/layout_noti_item.xml" value="0.1" />
       </map>
     </option>
   </component>

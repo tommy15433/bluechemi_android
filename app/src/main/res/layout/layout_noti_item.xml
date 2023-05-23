@@ -9,7 +9,7 @@
     </data>
 
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_bite_log_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,12 +19,16 @@
         android:layout_marginHorizontal="10dp"
         android:layout_marginVertical="10dp">
 
-
         <LinearLayout
-            android:id="@+id/layout_bite_log_item_others"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:id="@+id/layoutBiteLogItemOthers"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/button_camera"
+            android:orientation="vertical"
+            android:weightSum="10">
 
             <TextView
                 android:id="@+id/textview_bite_log_item_time"
@@ -32,7 +36,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center_horizontal"
+                android:gravity="center"
+
+                android:textSize="14sp"
+
                 />
             <TextView
                 android:id="@+id/textview_bite_log_item_location"
@@ -40,8 +47,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:textSize="14sp"
 
-                android:gravity="center_horizontal"
+                android:gravity="center"
+
+
                 />
             <TextView
                 android:id="@+id/textview_bite_log_item_info"
@@ -49,21 +61,40 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textSize="14sp"
 
+                android:gravity="center"
+
+                />
+            <EditText
+                android:id="@+id/edittext_bite_log_item_note"
+                android:text='@={notiItem.message, default="메모를 작성하시오"}'
+                android:layout_width="match_parent"
+                android:layout_height="15dp"
+                android:layout_weight="7"
                 android:gravity="center_horizontal"
+                android:inputType="text"
+
                 />
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/edittext_bite_log_item_note"
-            android:text='@={notiItem.message, default="메모를 작성하시오"}'
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:inputType="text"
+
+        <androidx.constraintlayout.utils.widget.ImageFilterButton
+            android:id="@+id/button_camera"
+            android:layout_width="100dp"
+            android:layout_height="150dp"
+
+            android:src='@{notiItem.drawable, default="@drawable/ic_empty_camera_svg"}'
+            android:scaleType="fitXY"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="5dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             />
 
 
-    </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

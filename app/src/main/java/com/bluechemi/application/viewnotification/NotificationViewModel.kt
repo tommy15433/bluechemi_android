@@ -1,5 +1,7 @@
 package com.bluechemi.application.viewnotification
 
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,6 +9,9 @@ import androidx.lifecycle.ViewModel
 class NotificationViewModel : ViewModel() {
     private val mList: ArrayList<NotificationItem> = arrayListOf()
     private val mUnreadMessages: MutableLiveData<ArrayList<NotificationItem>> = MutableLiveData()
+
+    private var capturingItem: NotificationItem? = null
+
     val unreadMessages: LiveData<ArrayList<NotificationItem>>
         get() = mUnreadMessages
 
@@ -32,12 +37,27 @@ class NotificationViewModel : ViewModel() {
         update()
     }
     fun add(item: NotificationItem){
-        mList.add(item)
-        update()
+        mList.find { it.date == item.date && it.time == item.time }?: run{
+            mList.add(item)
+            update()
+        }
     }
     fun removeAll(){
         mList.clear()
         update()
     }
-
+    fun setCaptureItem(item: NotificationItem){
+        capturingItem = item
+    }
+    fun setCapturedImage(drawable: Drawable){
+        //capturingItem?.drawable = drawable
+        capturingItem?.let { selected ->
+            mList.forEach{
+                if (it.compareTo(selected) == 0){
+                    it.drawable = drawable
+                }
+            }
+        }
+        update()
+    }
 }
