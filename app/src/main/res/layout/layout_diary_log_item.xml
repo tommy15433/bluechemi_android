@@ -34,14 +34,14 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="weather"
-                android:textAlignment="center"/>
+                android:textAlignment="textStart"/>
             <TextView
                 android:id="@+id/textview_diary_log_waveheight"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="waveheight"
-                android:textAlignment="center"/>
+                android:textAlignment="textStart"/>
 
         </LinearLayout>
         <LinearLayout
