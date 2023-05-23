@@ -1,5 +1,12 @@
 package com.bluechemi.application.utils
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import com.bluechemi.application.AppSettings.Settings
 import com.bluechemi.application.ViewDiary.DiaryItem
 import com.bluechemi.application.viewnotification.NotificationItem
 import java.nio.ByteBuffer
@@ -50,4 +57,23 @@ fun compareNotiDiary(noti: NotificationItem, diary: DiaryItem): Boolean{
     }
 
     return false
+}
+
+fun makeStoragePath(item: NotificationItem): String{
+    return "${Settings.APP_UUID}/${item.date}-${item.time}"
+}
+
+fun drawableToBitmap(drawable: Drawable?): Bitmap?{
+    drawable?.let{
+        if (it is BitmapDrawable){
+            return (it as BitmapDrawable).bitmap
+        }
+    }
+    return null
+}
+
+fun copyTextToClipboard(context: Context , text: String){
+    val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clipData = ClipData.newPlainText("text", text)
+    clipboardManager.setPrimaryClip(clipData)
 }
