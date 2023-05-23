@@ -47,7 +47,7 @@ object Settings{
         }
     }
 
-    object Sensitivity : SliderSetting(30, 255 - 30,128, 255-60){
+    object Sensitivity : SliderSetting(0, 100 ,50, 100){
 
     }
 }
