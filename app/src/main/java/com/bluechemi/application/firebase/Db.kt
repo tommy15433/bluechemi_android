@@ -82,7 +82,7 @@ object Db {
             val sky = it.data?.get(context.getString(R.string.db_key_diary_sky))?: "unknown sky"
             val wav = it.data?.get(context.getString(R.string.db_key_diary_wav))?: "unknown wav"
             val note = it.data?.get(context.getString(R.string.db_key_diary_note))?: "unknown note"
-            val uri = it.data?.get(context.getString(R.string.db_key_image_path))?: null
+            val imagepath = it.data?.get(context.getString(R.string.db_key_image_path))?: null
 
             list.add(
                 NotificationItem(
@@ -93,7 +93,8 @@ object Db {
                     sky.toString(),
                     wav.toString(),
                     note.toString(),
-                    null, null
+                    null,
+                    imagepath.toString()
                 )
             )
         }
