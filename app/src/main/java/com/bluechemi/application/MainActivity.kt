@@ -62,8 +62,7 @@ class MainActivity : AppCompatActivity() {
         val ACTIVITY_REQUEST_LOCATION_SERVICE = 1
         val ACTIVITY_REQUEST_CAMERA = 10
         val ACTIVITY_REQUEST_CAMERA_PERMISSIONS = mutableListOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.RECORD_AUDIO
+            Manifest.permission.CAMERA
         ).apply {
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P){
                 add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
