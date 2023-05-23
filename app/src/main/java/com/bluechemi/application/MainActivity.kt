@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.location.Location
 import android.graphics.drawable.Drawable
 import android.media.AudioManager
 import android.media.Ringtone
@@ -18,7 +17,6 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
@@ -31,6 +29,7 @@ import com.bluechemi.application.BlueChemi.BlueChemiIntentFilters
 import com.bluechemi.application.ViewDiary.DiaryFragment
 import com.bluechemi.application.ViewDiary.DiarySubjectViewModel
 import com.bluechemi.application.databinding.ActivityMainBinding
+import com.bluechemi.application.firebase.Db
 import com.bluechemi.application.viewnotification.FragmentNoti
 import com.bluechemi.application.viewnotification.FragmentNotiListener
 import com.bluechemi.application.viewnotification.NotificationItem
@@ -50,8 +49,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import java.io.InputStream
 import java.util.*
+import kotlin.collections.HashMap
 
 class MainActivity : AppCompatActivity() {
 
@@ -106,33 +105,13 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().add(R.id.linearlayout_fragment, FragmentDevices())
             .commit()
 
-        Firebase.firestore.collection(getString(R.string.db_root))
-            .document(Settings.APP_UUID)
-            .collection(getString(R.string.db_diary))
-            .get(Source.CACHE)
+        Db.ParseDiariesCache(this, Settings.APP_UUID)
             .addOnSuccessListener {
-                it.documents.forEach {
-
-                    val date = it.data?.get(getString(R.string.db_key_diary_date))?: "unknown date"
-                    val time = it.data?.get(getString(R.string.db_key_diary_time))?: "unknown time"
-                    val id = it.data?.get(getString(R.string.db_key_diary_id))?: "unknown id"
-                    val address = it.data?.get(getString(R.string.db_key_diary_address))?: "unknown address"
-                    val sky = it.data?.get(getString(R.string.db_key_diary_sky))?: "unknown sky"
-                    val wav = it.data?.get(getString(R.string.db_key_diary_wav))?: "unknown wav"
-                    val note = it.data?.get(getString(R.string.db_key_diary_note))?: "unknown note"
-
-                    diarySubjectModel.addNoti(
-                        NotificationItem(
-                            Settings.APP_UUID,
-                            date.toString(),
-                            time.toString(),
-                            address.toString(),
-                            sky.toString(),
-                            wav.toString(),
-                            note.toString()
-                        )
-                    )
+                Db.QueryDiaries(this, it).forEach {
+                    diarySubjectModel.addNoti(it)
                 }
+            }.addOnFailureListener {
+
             }
 
         initBottomNavigation()
@@ -141,21 +120,6 @@ class MainActivity : AppCompatActivity() {
         registerBroadcast(this)
 
         notiChannelCreate()
-
-        // testing attention please
-        notiModel.add(
-            NotificationItem(
-            "uuid",
-            "date",
-            "time",
-            "address",
-            "weather",
-            "waveheight",
-            "message",
-                resources.getDrawable(R.drawable.ic_empty_camera_svg)
-
-        )
-        )
     }
 
     private fun initLocation() {
@@ -281,21 +245,16 @@ class MainActivity : AppCompatActivity() {
                     val sense = devSettingModel.sensitivityValue.get() ?: Settings.Sensitivity.def
                     val bright = devSettingModel.brightnessValue.get() ?: Settings.LedBrightness.def
 
-                    val settingData = hashMapOf(
+                    val settingData: HashMap<String, Any> = hashMapOf(
                         getString(R.string.db_sensitivity) to sense,
                         getString(R.string.db_brightness) to bright,
                         getString(R.string.db_username) to name
                     )
                     Settings.deviceHashMap.get(uid)?.putAll(settingData)
-                    val db =Firebase.firestore.collection(getString(R.string.db_root))
-                        .document(Settings.APP_UUID)
-                        .collection(getString(R.string.db_doc_setting))
-                        .document(uid)
-                        .set(settingData)
+                    Db.UpdateDeviceSettings(this, Settings.APP_UUID, uid, settingData)
                         .addOnSuccessListener {
                             Toast.makeText(this, "server updated", Toast.LENGTH_SHORT).show()
-                        }
-                        .addOnFailureListener {
+                        }.addOnFailureListener {
                             Toast.makeText(
                                 this,
                                 "server upate failed: ${it.message}",
@@ -398,27 +357,24 @@ class MainActivity : AppCompatActivity() {
                     }
                     BlueChemiIntentFilters.ACTION_BITE_DETECTED -> {
 
-                        //runPhysicalNoti()
-//                        if (ElapseTimer.hasElapsed(Settings.BITE_DETECTION_INTERVAL_MAX_MS)){
+                        val id = uid
+                        val date = getCurrentDate()
+                        val time = getCurrentTime()
+                        val storagePath = makeStoragePath(Settings.APP_UUID, date, time)
+                        val noti: NotificationItem = NotificationItem(
+                            id,
+                            date,
+                            time,
+                            binding.address?:"없음",
+                            "${binding.sky} ${binding.temperature} ${binding.snowFall} ${binding.rainFall}",
+                            binding.waveheight?:"없음",
+                            "메모를 작성하세요",
+                            resources.getDrawable(R.drawable.ic_empty_camera_svg),
+                            storagePath
+                        )
 
-                            val noti: NotificationItem = NotificationItem(
-                                uid,
-                                getCurrentDate(),
-                                getCurrentTime(),
-                                binding.address?:"없음",
-                                "${binding.sky} ${binding.temperature} ${binding.snowFall} ${binding.rainFall}",
-                                binding.waveheight?:"없음",
-                                "메모를 작성하세요",
-                                resources.getDrawable(R.drawable.ic_empty_camera_svg)
-                            )
-
-                            notiModel.add(noti)
-                            notiDisplay(notiModel.unreadMessageCount)
-//
-//                            ElapseTimer.start()
-//                        }else{
-//
-//                        }
+                        notiModel.add(noti)
+                        notiDisplay(notiModel.unreadMessageCount)
 
                     }
                     else ->{
@@ -495,38 +451,19 @@ class MainActivity : AppCompatActivity() {
 
                 // register fragment noti event listener
                 val fragmentNoti: FragmentNoti = FragmentNoti()
-                fragmentNoti.setListener(object : FragmentNotiListener{
+                fragmentNoti.setListener(object : FragmentNotiListener {
                     override fun onSubmit(item: NotificationItem) {
+
+                        Db.UploadDiary(this@MainActivity, item)
+                            .addOnSuccessListener { Toast.makeText(this@MainActivity, "diary updated", Toast.LENGTH_SHORT).show() }
+                            .addOnFailureListener { Toast.makeText(this@MainActivity, "failed to diary update", Toast.LENGTH_SHORT).show() }
+
+                        Db.UploadPicture(this@MainActivity, item, 50)
+                            ?.addOnSuccessListener { Toast.makeText(this@MainActivity, "picture updated", Toast.LENGTH_SHORT).show() }
+                            ?.addOnFailureListener { Toast.makeText(this@MainActivity, "failed to upload picture", Toast.LENGTH_SHORT).show() }
+
+                        // image show on subject
                         diarySubjectModel.addNoti(item)
-
-                        // upload to server
-                        val map = hashMapOf(
-                            getString(R.string.db_key_diary_date) to item.date,
-                            getString(R.string.db_key_diary_id) to item.devUuid,
-                            getString(R.string.db_key_diary_address) to item.address,
-                            getString(R.string.db_key_diary_time) to item.time,
-                            getString(R.string.db_key_diary_sky) to item.weather,
-                            getString(R.string.db_key_diary_wav) to item.waveHeight,
-                            getString(R.string.db_key_diary_note) to item.message
-
-//                            ("ID" to item.devUuid) as Pair<Any, Any>,
-//                            ("SKY" to ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.SKY)?.getInfo()?: "없음") as Pair<Any, Any>,
-//                            ("WAV" to ForecastParser.lastResponse.parseCategory(ForecastResponse.CATEGORY.WAVE_HEIGHT)?.getInfo()?: "없음") as Pair<Any, Any>,
-                        )
-
-
-                        val db = Firebase.firestore
-                        db.collection(getString(R.string.db_root))
-                            .document(Settings.APP_UUID)
-                            .collection(getString(R.string.db_diary))
-                            .add(map)
-                            .addOnSuccessListener {
-                                Toast.makeText(this@MainActivity, "diary updated", Toast.LENGTH_SHORT).show()
-                            }
-                            .addOnFailureListener {
-                                Toast.makeText(this@MainActivity, "diary update failed", Toast.LENGTH_SHORT).show()
-                            }
-
                     }
                     override fun onRemove(item: NotificationItem) {
                         notiModel.remove(item)
@@ -568,8 +505,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onCapture(uri: Uri) {
                     val inputStream = contentResolver.openInputStream(uri)
                     val drawable = Drawable.createFromStream(inputStream, uri.toString())
-                    notiModel.setCapturedUri(drawable)
-                    onBackPressed()
+                    notiModel.setCapturedImage(drawable)
                 }
             })
         }

@@ -2,52 +2,76 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:layout_marginBottom="10dp"
     android:background="@drawable/ic_layout_message"
     android:layout_marginHorizontal="10dp"
-    android:layout_marginVertical="10dp">
+    android:layout_marginVertical="10dp"
+    android:weightSum="3">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="3"
-        android:layout_margin="5dp">
-
-        <TextView
-            android:id="@+id/textview_diary_log_time"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="time"
-            android:textAlignment="center"/>
-        <TextView
-            android:id="@+id/textview_diary_log_weather"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="weather"
-            android:textAlignment="center"/>
-        <TextView
-            android:id="@+id/textview_diary_log_waveheight"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="waveheight"
-            android:textAlignment="center"/>
-
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp">
-        <TextView
-            android:id="@+id/textview_diary_log_memo"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Memo"
-            android:textAlignment="center"/>
+            android:orientation="horizontal"
+            android:weightSum="3"
+            android:layout_margin="5dp">
+
+            <TextView
+                android:id="@+id/textview_diary_log_time"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="time"
+                android:textAlignment="center"/>
+            <TextView
+                android:id="@+id/textview_diary_log_weather"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="weather"
+                android:textAlignment="center"/>
+            <TextView
+                android:id="@+id/textview_diary_log_waveheight"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="waveheight"
+                android:textAlignment="center"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp">
+            <TextView
+                android:id="@+id/textview_diary_log_memo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Memo"
+                android:textAlignment="center"/>
+        </LinearLayout>
+
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/imageview_captured"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/ic_empty_camera_svg"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
 
 </LinearLayout>

@@ -62,6 +62,9 @@ fun compareNotiDiary(noti: NotificationItem, diary: DiaryItem): Boolean{
 fun makeStoragePath(item: NotificationItem): String{
     return "${Settings.APP_UUID}/${item.date}-${item.time}"
 }
+fun makeStoragePath(app_id: String, date: String, time:String): String{
+    return "${app_id}/${date}-${time}"
+}
 
 fun drawableToBitmap(drawable: Drawable?): Bitmap?{
     drawable?.let{

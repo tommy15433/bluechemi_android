@@ -148,12 +148,11 @@ class FragmentCamera : Fragment() {
                     Log.e("CAMERA", "Photo capture failed: ${exc.message}", exc)
                 }
 
-                override fun
-                        onImageSaved(output: ImageCapture.OutputFileResults){
+                override fun onImageSaved(output: ImageCapture.OutputFileResults){
                     val msg = "Photo capture succeeded: ${output.savedUri}"
                     Toast.makeText(mcontext, msg, Toast.LENGTH_SHORT).show()
                     lastCaptureUri = output.savedUri
-                    //activity?.onBackPressed()
+                        activity?.onBackPressed()
 //                    Log.d(TAG, msg)
 //                    uploadPicture(output.savedUri)
                     output.savedUri?.let{

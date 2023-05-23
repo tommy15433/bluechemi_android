@@ -1,5 +1,7 @@
 package com.bluechemi.application.ViewDiary
 
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,7 +27,8 @@ class DiarySubjectViewModel: ViewModel() {
                     notiItem.time,
                     notiItem.weather,
                     notiItem.waveHeight,
-                    notiItem.message
+                    notiItem.message,
+                    notiItem.storagePath
                 ))
 
                 return
@@ -38,8 +41,10 @@ class DiarySubjectViewModel: ViewModel() {
             notiItem.time,
             notiItem.weather,
             notiItem.waveHeight,
-            notiItem.message))
+            notiItem.message,
+            notiItem.storagePath))
 
         mItemsLive.value = mItems
     }
+
 }

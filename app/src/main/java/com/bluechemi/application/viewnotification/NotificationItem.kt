@@ -14,7 +14,8 @@ data class NotificationItem (
     val weather: String,
     val waveHeight: String,
     var message: String = "blank",
-    var drawable: Drawable? = null
+    var drawable: Drawable? = null,
+    var storagePath: String? = null
 )
         :Comparable<NotificationItem>{
 

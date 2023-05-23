@@ -37,8 +37,10 @@ class NotificationViewModel : ViewModel() {
         update()
     }
     fun add(item: NotificationItem){
-        mList.add(item)
-        update()
+        mList.find { it.date == item.date && it.time == item.time }?: run{
+            mList.add(item)
+            update()
+        }
     }
     fun removeAll(){
         mList.clear()
@@ -47,7 +49,7 @@ class NotificationViewModel : ViewModel() {
     fun setCaptureItem(item: NotificationItem){
         capturingItem = item
     }
-    fun setCapturedUri(drawable: Drawable){
+    fun setCapturedImage(drawable: Drawable){
         //capturingItem?.drawable = drawable
         capturingItem?.let { selected ->
             mList.forEach{
