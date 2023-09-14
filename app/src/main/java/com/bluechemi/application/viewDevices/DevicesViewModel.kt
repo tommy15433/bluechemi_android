@@ -50,7 +50,8 @@ class DevicesViewModel: ViewModel() {
             DevicesStateEnum.STOPPED,
             Settings.Sensitivity.min,
             Settings.LedBrightness.min,
-            100
+            100,
+            -1
         ))
 
         updateLiveData()
@@ -63,7 +64,8 @@ class DevicesViewModel: ViewModel() {
             DevicesStateEnum.STOPPED,
             sensitivity,
             brightness,
-            100
+            100,
+            -1
         ))
         updateLiveData()
     }
@@ -109,12 +111,14 @@ class DevicesViewModel: ViewModel() {
             Ble.instance.write(uid, BlueChemiParameters.CUSTOM_STOP_UUID, 1)
             Ble.instance.enableNotification(uid, BlueChemiParameters.CUSTOM_BAT_UUID, false);
             Ble.instance.enableNotification(uid, BlueChemiParameters.CUSTOM_BITE_UUID, false);
+            Ble.instance.enableNotification(uid, BlueChemiParameters.CUSTOM_STRINGMETER_UUID, false);
 
 
         }else{
             Ble.instance.write(uid, BlueChemiParameters.CUSTOM_START_UUID, 1)
             Ble.instance.enableNotification(uid, BlueChemiParameters.CUSTOM_BAT_UUID, true);
             Ble.instance.enableNotification(uid, BlueChemiParameters.CUSTOM_BITE_UUID, true);
+            Ble.instance.enableNotification(uid, BlueChemiParameters.CUSTOM_STRINGMETER_UUID, true);
 
         }
     }
@@ -170,6 +174,10 @@ class DevicesViewModel: ViewModel() {
         }?: run{
             return null
         }
+    }
+    fun setStringMeter(uid: String, _value: Int) {
+        mDevices.find { it.UID == uid }?.StringMeter = _value
+        updateLiveData()
     }
 
 }

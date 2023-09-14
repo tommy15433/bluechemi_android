@@ -291,7 +291,8 @@ class MainActivity : AppCompatActivity() {
             BlueChemiIntentFilters.ACTION_BITE_DETECTED,
             BlueChemiIntentFilters.ACTION_PLAY,
             BlueChemiIntentFilters.ACTION_STOP,
-            BlueChemiIntentFilters.ACTION_BATTERY_CHANGED)
+            BlueChemiIntentFilters.ACTION_BATTERY_CHANGED,
+            BlueChemiIntentFilters.ACTION_STRINGMETER)
 
         val broadcastReceiver: BroadcastReceiver = object: BroadcastReceiver(){
             override fun onReceive(context: Context?, intent: Intent?) {
@@ -375,6 +376,11 @@ class MainActivity : AppCompatActivity() {
                         notiModel.add(noti)
                         notiDisplay(notiModel.unreadMessageCount)
 
+                    }
+                    BlueChemiIntentFilters.ACTION_STRINGMETER -> {
+                        valint?.let{
+                            model.setStringMeter(uid, it)
+                        }
                     }
                     else ->{
                         Log.i(mtag, "unhandled action")

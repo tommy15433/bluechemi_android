@@ -19,4 +19,5 @@ object BlueChemiParameters {
         val CUSTOM_STOP_UUID = make("ff06")
         val CUSTOM_BAT_UUID = make("ff07")
         val CUSTOM_CUSTOM_UUID = make("ff08")
+        val CUSTOM_STRINGMETER_UUID = make("ff09")
 }

@@ -27,6 +27,8 @@ class DevicesRecyclerAdapter(
 
         val layoutOptions: View
 
+        val textviewStringMeter: TextView
+
         var UID: String = ""
             set(value) {
                 if (field == ""){
@@ -45,6 +47,8 @@ class DevicesRecyclerAdapter(
             imageViewBattery = itemView.findViewById(R.id.imageView_battery)
 
             layoutOptions = itemView.findViewById(R.id.layout_device_options)
+
+            textviewStringMeter = itemView.findViewById(R.id.textview_stringmeter)
         }
 
     }
@@ -87,6 +91,8 @@ class DevicesRecyclerAdapter(
         }else{
             holder.imageViewBattery.setImageResource(R.drawable.ic_battery_min)
         }
+
+        holder.textviewStringMeter.text = (devices[position].StringMeter.toFloat() / 10.0).toString()
 
         holder.layoutDevice.setOnClickListener {
 

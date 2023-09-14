@@ -12,6 +12,7 @@ class DevicesRecyclerItem (
     var Sensitivity: Int,
     var Brightness: Int,
     var Battery: Int,
+    var StringMeter: Int
         ){
 
     override fun toString(): String {

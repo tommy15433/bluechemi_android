@@ -224,6 +224,7 @@ class Ble(val context: Context) {
             BlueChemiParameters.CUSTOM_START_UUID -> return BlueChemiIntentFilters.ACTION_PLAY
             BlueChemiParameters.CUSTOM_STOP_UUID -> return BlueChemiIntentFilters.ACTION_STOP
             BlueChemiParameters.CUSTOM_BAT_UUID -> return BlueChemiIntentFilters.ACTION_BATTERY_CHANGED
+            BlueChemiParameters.CUSTOM_STRINGMETER_UUID -> return BlueChemiIntentFilters.ACTION_STRINGMETER
             else -> return ""
         }
     }
@@ -358,11 +359,16 @@ class Ble(val context: Context) {
 
             val action: String = characteristic?.uuid?.let { uuid2char(it) } ?: "null"
             val mac = gatt?.device?.address.toString()
-            val value = characteristic?.getIntValue(BluetoothGattCharacteristic.FORMAT_SINT32, 0)
+            var value = characteristic?.getIntValue(BluetoothGattCharacteristic.FORMAT_SINT32, 0)
                 ?.div(0x1000000)
 
             Log.i(TAG, "onCharacteristicChanged: ${action}, value: ${value.toString()}")
-
+            if (action == BlueChemiIntentFilters.ACTION_STRINGMETER){
+                value = (characteristic!!.value[0] * 256 * 256 * 256) +
+                        (characteristic!!.value[1] * 256 * 256) +
+                        (characteristic!!.value[2] * 256) +
+                        (characteristic!!.value[3] * 1)
+            }
             sendBroadcast(action, mac, value)
             clearFlags()
         }
