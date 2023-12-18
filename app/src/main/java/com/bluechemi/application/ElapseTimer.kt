@@ -9,5 +9,8 @@ object ElapseTimer {
     fun hasElapsed(ms: Long): Boolean{
         return (System.currentTimeMillis() - mstart) > ms
     }
+    fun hasStarted(): Boolean{
+        return mstart != 0L
+    }
 
 }
