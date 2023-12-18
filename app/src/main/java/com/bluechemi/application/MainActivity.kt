@@ -46,6 +46,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.common.base.Stopwatch
 import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -379,7 +380,16 @@ class MainActivity : AppCompatActivity() {
                     }
                     BlueChemiIntentFilters.ACTION_STRINGMETER -> {
                         valint?.let{
-                            model.setStringMeter(uid, it)
+                        if (ElapseTimer.hasStarted() == true){
+                                if (ElapseTimer.hasElapsed(250)){
+                                    model.setStringMeter(uid, it)
+                                    ElapseTimer.start();
+                                }
+                            }else{
+                                ElapseTimer.start();
+                                model.setStringMeter(uid, it)
+                            }
+
                         }
                     }
                     else ->{
