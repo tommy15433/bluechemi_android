@@ -92,7 +92,7 @@ class DevicesRecyclerAdapter(
             holder.imageViewBattery.setImageResource(R.drawable.ic_battery_min)
         }
 
-        holder.textviewStringMeter.text = (devices[position].StringMeter.toFloat() / 10.0).toString()
+        holder.textviewStringMeter.text = (devices[position].StringMeter.toDouble() / 100.0).toString()
 
         holder.layoutDevice.setOnClickListener {
 
